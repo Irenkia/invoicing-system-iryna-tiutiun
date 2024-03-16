@@ -16,4 +16,12 @@ class AppTest extends Specification {
         then:
         result != null
     }
+
+    def "must test tp cover main"() {
+        setup:
+        def app = new App()
+
+        and:
+        app.main()
+    }
 }
