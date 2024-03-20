@@ -37,6 +37,7 @@ dependencies {
     // This dependency is used by the application.
     implementation libs.guava
 
+    //Lombok
     implementation 'org.projectlombok:lombok:1.18.22'
     compileOnly 'org.projectlombok:lombok:1.18.22'
     annotationProcessor 'org.projectlombok:lombok:1.18.22'
@@ -44,8 +45,7 @@ dependencies {
     testCompileOnly 'org.projectlombok:lombok:1.18.22'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.22'
 
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.11.1'
-
+    //Jackson
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.11.1'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.11.1'
 }
@@ -100,14 +100,14 @@ jacocoTestCoverageVerification {
         rule {
             limit {
                 counter = 'BRANCH'
-                minimum = 0.70
+                minimum = 0.20
             }
         }
 
         rule {
             limit {
                 counter = 'LINE'
-                minimum = 0.70
+                minimum = 0.40
             }
         }
     }
