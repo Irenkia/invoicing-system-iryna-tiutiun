@@ -48,6 +48,7 @@ dependencies {
     //Jackson
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.11.1'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.11.1'
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.11.1'
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
@@ -100,14 +101,14 @@ jacocoTestCoverageVerification {
         rule {
             limit {
                 counter = 'BRANCH'
-                minimum = 0.20
+                minimum = 0.70
             }
         }
 
         rule {
             limit {
                 counter = 'LINE'
-                minimum = 0.40
+                minimum = 0.70
             }
         }
     }

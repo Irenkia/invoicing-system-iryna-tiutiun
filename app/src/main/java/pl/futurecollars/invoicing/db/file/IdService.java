@@ -15,7 +15,8 @@ public class IdService {
   }
 
   public int getNextIdAndIncrement() {
-    filesService.writeToFile(idFilePath, String.valueOf(nextId + 1));
+    filesService.writeToFile(idFilePath, String.valueOf(nextId));
     return nextId++;
   }
+
 }

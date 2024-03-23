@@ -67,7 +67,7 @@ public class FileBasedDatabase<T> implements Database {
       newInvoice.setEntries(updatedInvoice.getEntries());
       listUpdatedInvoice.add(jsonService.toJson(newInvoice));
     } else {
-      throw new IllegalArgumentException("Id " + id + " does not exist");
+      throw new IllegalArgumentException("id " + id + " does not exist");
     }
     filesService.writeLinesToFile(databasePath, listUpdatedInvoice);
   }
