@@ -9,20 +9,18 @@ import pl.futurecollars.invoicing.model.Invoice;
 import pl.futurecollars.invoicing.utils.FilesService;
 import pl.futurecollars.invoicing.utils.JsonService;
 
-public class FileBasedDatabase<T> implements Database {
+public class FileBasedDatabase implements Database {
 
   private final Path databasePath;
   private final IdService idService;
   private final FilesService filesService;
   private final JsonService jsonService;
-  private final Class<T> clazz;
 
-  public FileBasedDatabase(Path databasePath, IdService idService, FilesService filesService, JsonService jsonService, Class<T> clazz) {
+  public FileBasedDatabase(Path databasePath, IdService idService, FilesService filesService, JsonService jsonService) {
     this.databasePath = databasePath;
     this.idService = idService;
     this.filesService = filesService;
     this.jsonService = jsonService;
-    this.clazz = clazz;
   }
 
   @Override
@@ -37,7 +35,7 @@ public class FileBasedDatabase<T> implements Database {
     return filesService.readAllLines(databasePath)
         .stream()
         .filter(line -> containsId(line, id))
-        .map(line -> (Invoice) jsonService.toObject(line, clazz))
+        .map(line -> jsonService.toObject(line, Invoice.class))
         .findFirst();
   }
 
@@ -45,7 +43,7 @@ public class FileBasedDatabase<T> implements Database {
   public List<Invoice> getAll() {
     return filesService.readAllLines(databasePath)
         .stream()
-        .map(line -> (Invoice) jsonService.toObject(line, clazz))
+        .map(line -> jsonService.toObject(line, Invoice.class))
         .collect(Collectors.toList());
   }
 

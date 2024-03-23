@@ -17,7 +17,7 @@ class FileBasedDatabaseTest extends Specification {
     def filesService = new FilesService()
     def jsonService = new JsonService()
 
-    FileBasedDatabase db = new FileBasedDatabase(dbPath, idService, filesService, jsonService, Invoice as Class)
+    FileBasedDatabase db = new FileBasedDatabase(dbPath, idService, filesService, jsonService)
 
     def invoice1 = TestHelpers.invoice(1)
     def invoice2 = TestHelpers.invoice(2)
