@@ -1,5 +1,6 @@
 package pl.futurecollars.invoicing.service
 
+import pl.futurecollars.invoicing.TestHelpers
 import pl.futurecollars.invoicing.db.Database
 import pl.futurecollars.invoicing.db.memory.InMemoryDatabase
 import pl.futurecollars.invoicing.model.Invoice
@@ -14,7 +15,7 @@ class InvoiceServiceIntegrationTest extends Specification {
         Database db = new InMemoryDatabase();
         service = new InvoiceService(db);
 
-        invoices = (1..12).collect { pl.futurecollars.invoicing.TestHelpers.invoice(it) };
+        invoices = (1..12).collect { TestHelpers.invoice(it) };
     }
 
     def "should save invoices returning sequential id, invoice should have id set to correct value, get by id returns saved invoice"() {

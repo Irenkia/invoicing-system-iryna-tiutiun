@@ -22,11 +22,13 @@ public class InMemoryDatabase implements Database {
 
   @Override
   public Optional<Invoice> getById(int id) {
+
     return Optional.ofNullable(invoices.get(id));
   }
 
   @Override
   public List<Invoice> getAll() {
+
     return new ArrayList<>(invoices.values());
   }
 
