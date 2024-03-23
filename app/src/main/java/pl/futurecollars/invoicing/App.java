@@ -4,6 +4,9 @@
 
 package pl.futurecollars.invoicing;
 
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
 public class App {
 
   public String getGreeting() {
