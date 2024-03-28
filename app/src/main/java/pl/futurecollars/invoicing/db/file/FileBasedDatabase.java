@@ -9,7 +9,7 @@ import pl.futurecollars.invoicing.model.Invoice;
 import pl.futurecollars.invoicing.utils.FilesService;
 import pl.futurecollars.invoicing.utils.JsonService;
 
-public class FileBasedDatabase implements Database {
+public class FileBasedDatabase<I> implements Database {
 
   private final Path databasePath;
   private final IdService idService;

@@ -4,14 +4,14 @@
 
 package pl.futurecollars.invoicing;
 
-public class App {
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-  public String getGreeting() {
-    return "Hello World!";
-  }
+@SpringBootApplication
+public class App {
 
   public static void main(String[] args) {
 
-    System.out.println(new App().getGreeting());
+    SpringApplication.run(App.class, args);
   }
 }
