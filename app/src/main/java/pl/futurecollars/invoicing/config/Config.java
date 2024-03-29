@@ -1,8 +1,5 @@
 package pl.futurecollars.invoicing.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,22 +12,10 @@ import pl.futurecollars.invoicing.utils.JsonService;
 
 @Configuration
 public class Config {
+
   public static final String DATABASE_LOCATION = "db";
   public static final String ID_FILE_NAME = "id.txt";
   public static final String INVOICES_FILE_NAME = "invoices.txt";
-
-  @Bean
-  public FilesService filesService() {
-    return new FilesService();
-  }
-
-  @Bean
-  public JsonService jsonService() {
-    ObjectMapper mapper = new ObjectMapper();
-    mapper.registerModule(new JavaTimeModule());
-    mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-    return new JsonService();
-  }
 
   @Bean
   public IdService idService(FilesService filesService) throws IOException {
