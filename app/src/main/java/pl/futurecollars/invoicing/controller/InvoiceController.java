@@ -50,7 +50,7 @@ public class InvoiceController {
   }
 
   @PutMapping("/{id}")
-  @ResponseStatus(HttpStatus.NO_CONTENT)
+  @ResponseStatus(HttpStatus.OK)
   public ResponseEntity<Optional<Invoice>> updateInvoice(@PathVariable("id") int id, @RequestBody Invoice invoice) {
     return Optional.of(service.update(id, invoice))
         .map(ResponseEntity.ok()::body)
@@ -58,7 +58,7 @@ public class InvoiceController {
   }
 
   @DeleteMapping("/{id}")
-  @ResponseStatus(HttpStatus.NO_CONTENT)
+  @ResponseStatus(HttpStatus.OK)
   public ResponseEntity<Optional<Invoice>> deleteInvoice(@PathVariable("id") int id) {
     return Optional.of(service.delete(id))
         .map(ResponseEntity.ok()::body)
