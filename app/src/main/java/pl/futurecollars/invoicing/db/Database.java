@@ -14,7 +14,7 @@ public interface Database<I> {
 
   List<Invoice> getAll();
 
-  void update(int id, Invoice updatedInvoice);
+  Optional<Invoice> update(int id, Invoice updatedInvoice);
 
-  void delete(int id);
+  Optional<Invoice> delete(int id);
 }

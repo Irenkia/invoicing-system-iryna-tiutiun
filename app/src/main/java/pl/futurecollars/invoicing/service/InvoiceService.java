@@ -2,14 +2,17 @@ package pl.futurecollars.invoicing.service;
 
 import java.util.List;
 import java.util.Optional;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
 import pl.futurecollars.invoicing.db.Database;
 import pl.futurecollars.invoicing.model.Invoice;
 
+@Service
 public class InvoiceService {
 
   private final Database<Invoice> database;
 
-  public InvoiceService(Database<Invoice> database) {
+  public InvoiceService(@Qualifier("fileBasedDatabase") Database<Invoice> database) {
     this.database = database;
   }
 
@@ -25,12 +28,12 @@ public class InvoiceService {
     return database.getAll();
   }
 
-  public int update(int id, Invoice updatedInvoice) {
-    database.update(id, updatedInvoice);
-    return id;
+  public Optional<Invoice> update(int id, Invoice updatedInvoice) {
+    return database.update(id, updatedInvoice);
   }
 
-  public void delete(int id) {
-    database.delete(id);
+  public Optional<Invoice> delete(int id) {
+
+    return database.delete(id);
   }
 }

@@ -128,14 +128,8 @@ class FileBasedDatabaseTest extends Specification {
     }
 
     def "updating not existing invoice returns throw new IllegalArgumentException"() {
-        given:
-        def id = 213
-
-        when:
-        db.update(id, invoice1)
-
-        then:
-        thrown(IllegalArgumentException)
+        expect:
+        db.update(213, invoice1)  == Optional.empty()
     }
 
     def "deleted invoice is not returned"() {
@@ -169,6 +163,6 @@ class FileBasedDatabaseTest extends Specification {
 
     def "deleting not existing invoice returns optional empty"() {
         expect:
-        db.delete(123) == null
+        db.delete(123) == Optional.empty()
     }
 }

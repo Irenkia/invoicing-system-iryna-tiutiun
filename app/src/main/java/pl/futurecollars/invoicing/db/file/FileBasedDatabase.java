@@ -25,59 +25,77 @@ public class FileBasedDatabase<I> implements Database {
 
   @Override
   public int save(Invoice invoice) {
-    invoice.setId(idService.getNextIdAndIncrement());
-    filesService.appendLineToFile(databasePath, jsonService.toJson(invoice));
-    return invoice.getId();
+    try {
+      invoice.setId(idService.getNextIdAndIncrement());
+      filesService.appendLineToFile(databasePath, jsonService.toJson(invoice));
+
+      return invoice.getId();
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to save invoice in Database", e);
+    }
   }
 
   @Override
   public Optional<Invoice> getById(int id) {
-    return filesService.readAllLines(databasePath)
-        .stream()
-        .filter(line -> containsId(line, id))
-        .map(line -> jsonService.toObject(line, Invoice.class))
-        .findFirst();
+    try {
+      return filesService.readAllLines(databasePath)
+          .stream()
+          .filter(line -> containsId(line, id))
+          .map(line -> jsonService.toObject(line, Invoice.class))
+          .findFirst();
+    } catch (Exception e) {
+      throw new IllegalArgumentException("Failed to get invoice from id - " + id + ", does not exist", e);
+    }
   }
 
   @Override
   public List<Invoice> getAll() {
-    return filesService.readAllLines(databasePath)
-        .stream()
-        .map(line -> jsonService.toObject(line, Invoice.class))
-        .collect(Collectors.toList());
-  }
-
-  @Override
-  public void update(int id, Invoice updatedInvoice) {
-    List<String> allLines = filesService.readAllLines(databasePath);
-    List<String> listUpdatedInvoice = allLines
-        .stream()
-        .filter(line -> !containsId(line, id))
-        .collect(Collectors.toList());
-
-    Optional<Invoice> invoice = getById(id);
-    if (invoice.isPresent()) {
-      Invoice newInvoice = invoice.get();
-      newInvoice.setId(id);
-      newInvoice.setDate(updatedInvoice.getDate());
-      newInvoice.setBuyer(updatedInvoice.getBuyer());
-      newInvoice.setSeller(updatedInvoice.getSeller());
-      newInvoice.setEntries(updatedInvoice.getEntries());
-      listUpdatedInvoice.add(jsonService.toJson(newInvoice));
-    } else {
-      throw new IllegalArgumentException("id " + id + " does not exist");
+    try {
+      return filesService.readAllLines(databasePath)
+          .stream()
+          .map(line -> jsonService.toObject(line, Invoice.class))
+          .collect(Collectors.toList());
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to read invoices from file", e);
     }
-    filesService.writeLinesToFile(databasePath, listUpdatedInvoice);
   }
 
   @Override
-  public void delete(int id) {
-    List<String> allLines = filesService.readAllLines(databasePath);
-    List<String> listWithoutInvoiceFromId = allLines
-        .stream()
-        .filter(line -> !containsId(line, id))
-        .collect(Collectors.toList());
-    filesService.writeLinesToFile(databasePath, listWithoutInvoiceFromId);
+  public Optional<Invoice> update(int id, Invoice updatedInvoice) {
+    try {
+      List<String> allLines = filesService.readAllLines(databasePath);
+      List<String> listWithoutInvoiceFromId = allLines
+          .stream()
+          .filter(line -> !containsId(line, id))
+          .collect(Collectors.toList());
+      Optional<Invoice> invoice = getById(id);
+      if (invoice.isPresent()) {
+        updatedInvoice.setId(id);
+        listWithoutInvoiceFromId.add(jsonService.toJson(updatedInvoice));
+      }
+      allLines.removeAll(listWithoutInvoiceFromId);
+      filesService.writeLinesToFile(databasePath, listWithoutInvoiceFromId);
+      return allLines.isEmpty() ? Optional.empty() : Optional.of(jsonService.toObject(allLines.get(0), Invoice.class));
+    } catch (Exception e) {
+      throw new IllegalArgumentException("Failed to update invoice from id - " + id + ", does not exist");
+    }
+  }
+
+  @Override
+  public Optional<Invoice> delete(int id) {
+    try {
+      List<String> allLines = filesService.readAllLines(databasePath);
+      List<String> listWithoutInvoiceFromId = allLines
+          .stream()
+          .filter(line -> !containsId(line, id))
+          .collect(Collectors.toList());
+      filesService.writeLinesToFile(databasePath, listWithoutInvoiceFromId);
+      allLines.removeAll(listWithoutInvoiceFromId);
+
+      return allLines.isEmpty() ? Optional.empty() : Optional.of(jsonService.toObject(allLines.get(0), Invoice.class));
+    } catch (Exception e) {
+      throw new IllegalArgumentException("Failed to delete invoice from id - " + id + ", does not exist", e);
+    }
   }
 
   private boolean containsId(String line, int id) {
