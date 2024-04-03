@@ -38,6 +38,10 @@ dependencies {
     testImplementation libs.spock.core
     testImplementation libs.junit
 
+    testImplementation 'org.spockframework:spock-core:2.0-groovy-3.0'
+    testImplementation 'org.spockframework:spock-spring:2.0-groovy-3.0'
+    testImplementation "org.testcontainers:spock:1.19.7"
+
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     // This dependency is used by the application.
@@ -132,10 +136,15 @@ jacocoTestCoverageVerification {
             }
         }
     }
-    afterEvaluate { // TODO [PK] remove after adding tests in Task #5
+    afterEvaluate {
         classDirectories.setFrom(files(classDirectories.files.collect {
-            fileTree(dir: it, exclude: 'pl/futurecollars/invoicing/controller/**')
+            fileTree(dir: it, exclude: 'pl/futurecollars/invoicing/InvoiceApplication.class')
         }))
     }
+//    afterEvaluate { // TODO [PK] remove after adding tests in Task #5
+//        classDirectories.setFrom(files(classDirectories.files.collect {
+//            fileTree(dir: it, exclude: 'pl/futurecollars/invoicing/controller/**')
+//        }))
+//    }
 }
 
