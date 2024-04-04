@@ -1,14 +1,18 @@
 package pl.futurecollars.invoicing
 
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.context.SpringBootTest
+import pl.futurecollars.invoicing.service.InvoiceService
 import spock.lang.Specification
 
+@SpringBootTest
 class InvoiceApplicationTest extends Specification {
 
-    def "must test to cover main"() {
-        setup:
-        def app = new InvoiceApplication()
+    @Autowired
+    private InvoiceService invoiceService;
 
-        and:
-        app.main()
+    def "invoice service id created"() {
+        expect:
+        invoiceService
     }
 }
