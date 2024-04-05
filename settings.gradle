@@ -11,4 +11,4 @@ plugins {
 }
 
 rootProject.name = 'invoicing-system-iryna-tiutiun'
-include('app')
+//include('app')
