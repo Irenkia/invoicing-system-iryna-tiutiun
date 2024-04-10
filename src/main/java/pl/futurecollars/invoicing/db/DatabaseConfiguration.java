@@ -3,6 +3,7 @@ package pl.futurecollars.invoicing.db;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,20 +16,20 @@ import pl.futurecollars.invoicing.utils.JsonService;
 @Configuration
 public class DatabaseConfiguration {
 
-  public static final String DATABASE_LOCATION = "db";
-  public static final String ID_FILE_NAME = "id.txt";
-  public static final String INVOICES_FILE_NAME = "invoices.txt";
-
   @Bean
-  public IdService idService(FilesService filesService) throws IOException {
-    Path idFilePath = Files.createTempFile(DATABASE_LOCATION, ID_FILE_NAME);
+  public IdService idService(FilesService filesService,
+                             @Value("${invoicing-system.database.directory}") String databaseDirectory,
+                             @Value("${invoicing-system.database.id.file}") String idFile) throws IOException {
+    Path idFilePath = Files.createTempFile(databaseDirectory, idFile);
     return new IdService(idFilePath, filesService);
   }
 
   @ConditionalOnProperty(name = "invoicing-system.database", havingValue = "file")
   @Bean
-  public Database fileBasedDatabase(IdService idService, FilesService filesService, JsonService jsonService) throws IOException {
-    Path databaseFilePath = Files.createTempFile(DATABASE_LOCATION, INVOICES_FILE_NAME);
+  public Database fileBasedDatabase(IdService idService, FilesService filesService, JsonService jsonService,
+                                    @Value("${invoicing-system.database.directory}") String databaseDirectory,
+                                    @Value("${invoicing-system.database.invoices.file}") String invoicesFile) throws IOException {
+    Path databaseFilePath = Files.createTempFile(databaseDirectory, invoicesFile);
     return new FileBasedDatabase(databaseFilePath, idService, filesService, jsonService);
   }
 
