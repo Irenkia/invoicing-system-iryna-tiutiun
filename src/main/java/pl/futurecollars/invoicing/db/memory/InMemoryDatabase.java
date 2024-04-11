@@ -6,13 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import lombok.NoArgsConstructor;
-import org.springframework.context.annotation.Primary;
-import org.springframework.stereotype.Repository;
 import pl.futurecollars.invoicing.db.Database;
 import pl.futurecollars.invoicing.model.Invoice;
 
-@Repository
-@Primary
 @NoArgsConstructor
 public class InMemoryDatabase<I> implements Database<I> {
 
