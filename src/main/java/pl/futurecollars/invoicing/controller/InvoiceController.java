@@ -1,5 +1,7 @@
 package pl.futurecollars.invoicing.controller;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,7 @@ import pl.futurecollars.invoicing.service.InvoiceService;
 
 @RestController
 @RequestMapping("/invoices")
+@Api(tags = {"invoice-controller"})
 public class InvoiceController {
 
   @Autowired
@@ -29,18 +32,21 @@ public class InvoiceController {
     this.service = service;
   }
 
+  @ApiOperation(value = "Get list of all invoices")
   @GetMapping(produces = {"application/json;charset=UTF-8"})
   @ResponseStatus(HttpStatus.CREATED)
   public ResponseEntity<List<Invoice>> getAll() {
     return ResponseEntity.ok().body(service.getAll());
   }
 
+  @ApiOperation(value = "Add new invoice to system")
   @PostMapping
   @ResponseStatus(HttpStatus.OK)
   public int addInvoice(@RequestBody Invoice invoice) {
     return service.save(invoice);
   }
 
+  @ApiOperation(value = "Get invoice by id")
   @GetMapping(value = "/{id}", produces = {"application/json;charset=UTF-8"})
   @ResponseStatus(HttpStatus.OK)
   public ResponseEntity<Optional<Invoice>> findById(@PathVariable("id") int id) {
@@ -49,6 +55,7 @@ public class InvoiceController {
         .orElse(ResponseEntity.notFound().build());
   }
 
+  @ApiOperation(value = "Update invoice with given id")
   @PutMapping("/{id}")
   @ResponseStatus(HttpStatus.OK)
   public ResponseEntity<Optional<Invoice>> updateInvoice(@PathVariable("id") int id, @RequestBody Invoice invoice) {
@@ -57,6 +64,7 @@ public class InvoiceController {
         .orElse(ResponseEntity.notFound().build());
   }
 
+  @ApiOperation(value = "Delete invoice with given id")
   @DeleteMapping("/{id}")
   @ResponseStatus(HttpStatus.OK)
   public ResponseEntity<Optional<Invoice>> deleteInvoice(@PathVariable("id") int id) {
