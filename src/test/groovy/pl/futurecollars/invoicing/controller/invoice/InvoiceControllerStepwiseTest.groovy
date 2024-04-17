@@ -1,5 +1,6 @@
 package pl.futurecollars.invoicing.controller.invoice
 
+import pl.futurecollars.invoicing.controller.Requests
 import pl.futurecollars.invoicing.helpers.TestHelpers
 import pl.futurecollars.invoicing.model.Invoice
 import spock.lang.Shared
