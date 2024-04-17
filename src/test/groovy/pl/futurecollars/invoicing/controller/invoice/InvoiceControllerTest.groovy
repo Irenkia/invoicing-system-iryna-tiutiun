@@ -1,29 +1,10 @@
-package pl.futurecollars.invoicing.controller
+package pl.futurecollars.invoicing.controller.invoice
 
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.http.MediaType
-import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import pl.futurecollars.invoicing.helpers.TestHelpers
-import pl.futurecollars.invoicing.model.Invoice
-import pl.futurecollars.invoicing.utils.JsonService
 import spock.lang.Shared
-import spock.lang.Specification
 import java.time.LocalDate
 
-@AutoConfigureMockMvc
-@SpringBootTest
-class InvoiceControllerTest extends Specification {
-
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private JsonService jsonService;
+class InvoiceControllerTest extends Requests {
 
     @Shared
     private int invoiceId
@@ -103,7 +84,7 @@ class InvoiceControllerTest extends Specification {
         invoiceId = postRequest(invoiceAsJson)
 
         when:
-        putRequest(invoiceId, invoiceAsJson)
+        putRequestById(invoiceId, invoiceAsJson)
 
         then: "updated invoice is returned correctly when getting by id"
         def response = getRequestById(invoiceId)
@@ -119,7 +100,7 @@ class InvoiceControllerTest extends Specification {
         invoiceId = 25
 
         when:
-        def response = putRequest(invoiceId, invoiceAsJson)
+        def response = putRequestById(invoiceId, invoiceAsJson)
 
         then:
         response == null
@@ -133,7 +114,7 @@ class InvoiceControllerTest extends Specification {
         response == List.of(invoice)
 
         when: "invoice deleted from exist id"
-        deleteRequest(invoiceId)
+        deleteRequestById(invoiceId)
 
         then:
         def expectedResponse = getRequest()
@@ -147,7 +128,7 @@ class InvoiceControllerTest extends Specification {
         invoiceId = 10
 
         expect:
-        deleteRequest(invoiceId) == null
+        deleteRequestById(invoiceId) == null
     }
 
     def "when added 3 invoices, then second can be deleted and 2 invoices left"() {
@@ -165,66 +146,13 @@ class InvoiceControllerTest extends Specification {
         response.size() == List.of(invoice1, invoice2, invoice3).size()
 
         when: "second can be deleted"
-        deleteRequest(invoiceId2)
+        deleteRequestById(invoiceId2)
 
         then: "2 invoices left"
         def expectedResponse1 = getRequest()
         expectedResponse1.size() == List.of(invoice1, invoice3).size()
 
         deleteAllInvoices()
-    }
-
-    private List<Invoice> getRequest(){
-        def response = mockMvc
-                .perform(MockMvcRequestBuilders.get("/invoices"))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andReturn()
-                .response
-                .contentAsString
-        return jsonService.toObject(response, Invoice[])
-    }
-
-    private int postRequest(String invoiceAsJson){
-        def invoiceId = Integer.valueOf(mockMvc.perform(
-                MockMvcRequestBuilders.post("/invoices")
-                        .content(invoiceAsJson)
-                        .contentType(MediaType.APPLICATION_JSON)
-        )
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andReturn()
-                .response
-                .contentAsString)
-        return invoiceId
-    }
-
-    private Invoice getRequestById(int id){
-        def response = mockMvc
-                .perform(MockMvcRequestBuilders.get("/invoices/$id"))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andReturn()
-                .response
-                .contentAsString
-        return jsonService.toObject(response, Invoice)
-    }
-
-    private void putRequest(int id, String invoiceAsJson){
-        mockMvc.perform(
-                MockMvcRequestBuilders.put("/invoices/$id")
-                        .content(invoiceAsJson)
-                        .contentType(MediaType.APPLICATION_JSON)
-        )
-                .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isOk())
-    }
-
-    private void deleteRequest(int id){
-        mockMvc.perform(MockMvcRequestBuilders.delete("/invoices/$id"))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-    }
-
-    private void deleteAllInvoices(){
-        def listInvoices =  getRequest()
-        listInvoices.each {invoice -> deleteRequest(invoice.id)}
     }
 
 }
