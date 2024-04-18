@@ -1,6 +1,7 @@
 package pl.futurecollars.invoicing.db.memory
 
 import pl.futurecollars.invoicing.db.Database
+import pl.futurecollars.invoicing.helpers.TestHelpers
 import pl.futurecollars.invoicing.model.Invoice
 import spock.lang.Specification
 
@@ -12,7 +13,7 @@ class InMemoryDatabaseTest extends Specification {
     def setup() {
         database = new InMemoryDatabase();
 
-        invoices = (1..12).collect { pl.futurecollars.invoicing.TestHelpers.invoice(it) }
+        invoices = (1..12).collect { TestHelpers.invoice(it) }
     }
 
     def "should save invoices returning sequential id, invoice should have id set to correct value, get by id returns saved invoice"() {

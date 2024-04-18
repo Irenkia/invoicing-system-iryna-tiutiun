@@ -1,6 +1,6 @@
 package pl.futurecollars.invoicing.service
 
-import pl.futurecollars.invoicing.TestHelpers
+import pl.futurecollars.invoicing.helpers.TestHelpers
 import pl.futurecollars.invoicing.db.Database
 import pl.futurecollars.invoicing.db.memory.InMemoryDatabase
 import pl.futurecollars.invoicing.model.Invoice

@@ -1,6 +1,6 @@
 package pl.futurecollars.invoicing.service
 
-import pl.futurecollars.invoicing.TestHelpers
+import pl.futurecollars.invoicing.helpers.TestHelpers
 import pl.futurecollars.invoicing.db.Database
 import spock.lang.Specification
 

@@ -1,6 +1,6 @@
 package pl.futurecollars.invoicing.db.file
 
-import pl.futurecollars.invoicing.TestHelpers
+import pl.futurecollars.invoicing.helpers.TestHelpers
 import pl.futurecollars.invoicing.model.Invoice
 import pl.futurecollars.invoicing.utils.FilesService
 import pl.futurecollars.invoicing.utils.JsonService

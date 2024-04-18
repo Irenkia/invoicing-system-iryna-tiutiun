@@ -2,7 +2,7 @@ package pl.futurecollars.invoicing.utils
 
 import pl.futurecollars.invoicing.model.Invoice
 import spock.lang.Specification
-import pl.futurecollars.invoicing.TestHelpers
+import pl.futurecollars.invoicing.helpers.TestHelpers
 
 class JsonServiceTest extends Specification {
 
