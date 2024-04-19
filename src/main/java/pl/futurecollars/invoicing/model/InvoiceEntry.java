@@ -20,7 +20,7 @@ public class InvoiceEntry {
   private int quantity;
 
   @ApiModelProperty(value = "Product/service net price", required = true, example = "1000.00")
-  private BigDecimal price;
+  private BigDecimal netPrice;
 
   @ApiModelProperty(value = "Product/service tax value", required = true, example = "80.00")
   private BigDecimal vatValue;
