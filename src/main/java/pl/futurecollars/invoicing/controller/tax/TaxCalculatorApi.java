@@ -3,6 +3,7 @@ package pl.futurecollars.invoicing.controller.tax;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +18,6 @@ public interface TaxCalculatorApi {
   @ApiOperation(value = "Get incomes, costs, vat and taxes to pay")
   @PostMapping
   @ResponseStatus(HttpStatus.OK)
-  TaxCalculatorResult calculateTaxes(@RequestBody Company company);
+  ResponseEntity<TaxCalculatorResult> calculateTaxes(@RequestBody Company company);
 
 }

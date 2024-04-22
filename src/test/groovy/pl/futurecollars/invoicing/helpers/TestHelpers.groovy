@@ -1,5 +1,6 @@
 package pl.futurecollars.invoicing.helpers
 
+import pl.futurecollars.invoicing.model.Car
 import pl.futurecollars.invoicing.model.Company
 import pl.futurecollars.invoicing.model.Invoice
 import pl.futurecollars.invoicing.model.InvoiceEntry
@@ -14,8 +15,8 @@ class TestHelpers extends Specification {
                 .taxIdentificationNumber("$id")
                 .address("ul. Bukowinska 24d/$id 02-703 Warszawa, Polska")
                 .name("iCode Trust $id Sp. z o.o")
-                .pensionInsurance(BigDecimal.valueOf(id * 1000 * 0.008))
-                .healthInsurance(BigDecimal.valueOf(id * 1000 * 0.09))
+                .pensionInsurance(BigDecimal.valueOf(id * 626.51))
+                .healthInsurance(BigDecimal.valueOf(id * 387.00))
                 .build()
     }
 
@@ -24,18 +25,23 @@ class TestHelpers extends Specification {
                 .taxIdentificationNumber("$id")
                 .address("ul. Bukowinska 24d/$id 02-703 Warszawa, Polska")
                 .name("iCode Trust $id Sp. z o.o")
-                .pensionInsurance(BigDecimal.valueOf(id * 1000 * 0.008))
-                .healthInsurance(BigDecimal.valueOf(id * 1000 * 0.0775))
+                .pensionInsurance(BigDecimal.valueOf(id * 626.51))
+                .healthInsurance(BigDecimal.valueOf(id * 387.00))
                 .build()
     }
-
     static product(int id) {
         InvoiceEntry.builder()
                 .description("Programming course $id")
                 .quantity(1)
-                .netPrice(BigDecimal.valueOf(id * 1000))
-                .vatValue(BigDecimal.valueOf(id * 1000 * 0.23))
-                .vatRate(Vat.VAT_23)
+                .netPrice(BigDecimal.valueOf(id * 8100))
+                .vatValue(BigDecimal.valueOf(id * 1900))
+                .vatRate(Vat.VAT_19)
+                .expenseRelatedToCar(
+                        Car.builder()
+                        .registrationNumber("XY 000$id")
+                        .personalUse(true)
+                        .build()
+                )
                 .build()
     }
 

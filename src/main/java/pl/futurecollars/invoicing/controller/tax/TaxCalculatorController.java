@@ -1,6 +1,7 @@
 package pl.futurecollars.invoicing.controller.tax;
 
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import pl.futurecollars.invoicing.model.Company;
@@ -14,7 +15,7 @@ public class TaxCalculatorController implements TaxCalculatorApi {
   private final TaxCalculatorService taxService;
 
   @Override
-  public TaxCalculatorResult calculateTaxes(@RequestBody Company company) {
-    return taxService.calculateTaxes(company);
+  public ResponseEntity<TaxCalculatorResult> calculateTaxes(@RequestBody Company company) {
+    return ResponseEntity.ok().body(taxService.calculateTaxes(company));
   }
 }

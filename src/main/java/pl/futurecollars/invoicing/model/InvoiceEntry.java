@@ -20,10 +20,10 @@ public class InvoiceEntry {
   private int quantity;
 
   @ApiModelProperty(value = "Product/service net price", required = true, example = "138.72")
-  private BigDecimal netPrice; // 154.68 (138.72 + 15.95)-> to reduce the VAT to be paid
+  private BigDecimal netPrice; // example = "138.72" | 154.68 (138.72 + 15.95)-> to reduce the VAT to be paid
 
   @ApiModelProperty(value = "Product/service tax value", required = true, example = "31.91")
-  private BigDecimal vatValue; // then 15.95 goes to VAT and 15.96 to costs
+  private BigDecimal vatValue; // example = "31.91" | then 15.95 goes to VAT and 15.96 to costs
 
   @ApiModelProperty(value = "Tax rate", required = true, example = "VAT_19")
   private Vat vatRate;
