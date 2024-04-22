@@ -16,7 +16,7 @@ class TaxCalculatorControllerTest extends Requests {
         then:
         taxCalculatorResponse.income == 0
         taxCalculatorResponse.costs == 0
-        taxCalculatorResponse.earnings == 0
+
         taxCalculatorResponse.collectedVat == 0
         taxCalculatorResponse.paidVat == 0
         taxCalculatorResponse.vatToReturn == 0
@@ -27,9 +27,9 @@ class TaxCalculatorControllerTest extends Requests {
         def taxCalculatorResponse = calculateTaxes("no_match")
 
         then:
+        taxCalculatorResponse.income == 0
         taxCalculatorResponse.costs == 0
-        taxCalculatorResponse.costs == 0
-        taxCalculatorResponse.earnings == 0
+
         taxCalculatorResponse.collectedVat == 0
         taxCalculatorResponse.paidVat == 0
         taxCalculatorResponse.vatToReturn == 0
@@ -52,7 +52,7 @@ class TaxCalculatorControllerTest extends Requests {
         then:
         taxCalculatorResponse1.income == 1000.0
         taxCalculatorResponse1.costs == 1000.0
-        taxCalculatorResponse1.earnings == 0.0
+
         taxCalculatorResponse1.collectedVat == 80.0
         taxCalculatorResponse1.paidVat == 80.0
         taxCalculatorResponse1.vatToReturn == 0.0
@@ -63,7 +63,7 @@ class TaxCalculatorControllerTest extends Requests {
         then:
         taxCalculatorResponse2.income == 1000.0 + 2000.0
         taxCalculatorResponse2.costs == 1000.0 + 2000.0
-        taxCalculatorResponse2.earnings == 0.0
+
         taxCalculatorResponse2.collectedVat == 80.0 + 160.0
         taxCalculatorResponse2.paidVat == 80.0 + 160.0
         taxCalculatorResponse2.vatToReturn == 0.0
@@ -74,7 +74,7 @@ class TaxCalculatorControllerTest extends Requests {
         then:
         taxCalculatorResponse3.income == (1000.0 + 2000.0) + 3000.0
         taxCalculatorResponse3.costs == (1000.0 + 2000.0) + 3000.0
-        taxCalculatorResponse3.earnings == 0.0
+
         taxCalculatorResponse3.collectedVat == (80.0 + 160.0) + 240.0
         taxCalculatorResponse3.paidVat == (80.0 + 160.0) + 240.0
         taxCalculatorResponse3.vatToReturn == 0.0
@@ -97,7 +97,7 @@ class TaxCalculatorControllerTest extends Requests {
         then:
         taxCalculatorResponse.income == 6000
         taxCalculatorResponse.costs == 6000
-        taxCalculatorResponse.earnings == 0.0
+
         taxCalculatorResponse.collectedVat == 480.0
         taxCalculatorResponse.paidVat == 480.0
         taxCalculatorResponse.vatToReturn == 0.0
