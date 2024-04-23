@@ -28,6 +28,7 @@ class InvoiceControllerStepwiseTest extends Requests {
 
     def "add single invoice"() {
         given:
+        deleteAllInvoices()
         def invoice = originalInvoice
         def invoiceAsJson = jsonService.toJson(invoice)
 

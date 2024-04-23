@@ -8,6 +8,7 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
+import pl.futurecollars.invoicing.model.Company
 import pl.futurecollars.invoicing.model.Invoice
 import pl.futurecollars.invoicing.service.TaxCalculatorResult
 import pl.futurecollars.invoicing.utils.JsonService
@@ -76,9 +77,12 @@ class Requests extends Specification {
         listInvoices.each {invoice -> deleteRequestById(invoice.id)}
     }
 
-    TaxCalculatorResult calculateTaxes(String taxIdentificationNumber) {
+    TaxCalculatorResult calculateTaxes(Company company) {
         def response = mockMvc
-                .perform(MockMvcRequestBuilders.get("/tax/$taxIdentificationNumber"))
+                .perform(
+                        MockMvcRequestBuilders.post("/tax")
+                        .content(jsonService.toJson(company))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn()
                 .response
