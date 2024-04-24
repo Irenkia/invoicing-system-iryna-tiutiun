@@ -7,6 +7,7 @@
 
 buildscript {
     ext {
+        flywayVersion = '7.6.0'
         lombokVersion = '1.18.22'
         spockVersion = '2.0-groovy-3.0'
         springBootVersion = '2.4.2'
@@ -57,7 +58,16 @@ dependencies {
 
     //Spring Boot
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    //database
+    runtimeOnly 'org.postgresql:postgresql:42.2.19'
+    runtimeOnly 'com.h2database:h2:1.4.200'
+
+    //Flyway
+//    compile "org.flywaydb:flyway-core:${flywayVersion}"
+    implementation "org.flywaydb:flyway-core:${flywayVersion}"
 
     //Lombok
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
@@ -155,7 +165,7 @@ jacocoTestCoverageVerification {
     }
     afterEvaluate {
         classDirectories.setFrom(files(classDirectories.files.collect {
-            fileTree(dir: it, exclude: 'pl/futurecollars/invoicing/InvoiceApplication.class')
+            fileTree(dir: it, exclude: ['pl/futurecollars/invoicing/InvoiceApplication.class', 'pl/futurecollars/invoicing/db/DatabaseConfiguration.class'])
         }))
     }
 //    afterEvaluate { // TODO [PK] remove after adding tests in Task #5
@@ -165,3 +175,18 @@ jacocoTestCoverageVerification {
 //    }
 }
 
+task testWithFileDatabase(type: Test) {
+    systemProperty 'spring.profiles.active', 'file'
+}
+
+task testWithMemoryDatabase(type: Test) {
+    systemProperty 'spring.profiles.active', 'memory'
+}
+
+task testWithSQLDatabase(type: Test) {
+    systemProperty 'spring.profiles.active', 'sql'
+}
+
+check.dependsOn testWithFileDatabase
+check.dependsOn testWithFileDatabase
+//check.dependsOn testWithSqlDatabase
