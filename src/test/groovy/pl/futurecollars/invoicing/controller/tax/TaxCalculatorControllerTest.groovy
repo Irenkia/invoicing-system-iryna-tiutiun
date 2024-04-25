@@ -88,7 +88,7 @@ class TaxCalculatorControllerTest extends Requests {
     }
 
     def "sum of all products is returned when tax id is matching and when car is used for personal purposes"() {
-        given: "added 3 invoices"
+        given:
         def invoice1 = TestHelpers.invoice(1)
         def id1 = postRequest(jsonService.toJson(invoice1))
 
