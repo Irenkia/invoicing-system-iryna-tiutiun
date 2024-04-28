@@ -10,7 +10,7 @@ import pl.futurecollars.invoicing.model.Invoice;
 import pl.futurecollars.invoicing.model.InvoiceEntry;
 
 @Repository
-public interface Database<I> {
+public interface Database {
 
   int save(Invoice invoice);
 

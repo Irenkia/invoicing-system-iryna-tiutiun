@@ -9,9 +9,9 @@ import pl.futurecollars.invoicing.model.Invoice;
 @Service
 public class InvoiceService {
 
-  private final Database<Invoice> database;
+  private final Database database;
 
-  public InvoiceService(Database<Invoice> database) {
+  public InvoiceService(Database database) {
     this.database = database;
   }
 
