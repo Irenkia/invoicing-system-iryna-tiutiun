@@ -4,9 +4,12 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import javax.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -25,6 +28,36 @@ public class SqlDatabase implements Database {
 
   private JdbcTemplate jdbcTemplate;
 
+  private final Map<Vat, Integer> vatToId = new HashMap<>();
+  private final Map<Integer, Vat> idToVat = new HashMap<>();
+
+  @PostConstruct
+  private void initVatRateMap() { // default so it can be called from SqlDatabaseIntegrationTest
+    jdbcTemplate.query("SELECT * FROM vat", resultSet -> {
+      Vat vat = Vat.valueOf("VAT_" + resultSet.getString("name"));
+      int id = resultSet.getInt("id");
+      vatToId.put(vat, id);
+      idToVat.put(id, vat);
+    });
+  }
+
+  private Integer insertCarAndGetItId(Car car) {
+    if (car == null) {
+      return null;
+    }
+
+    GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
+    jdbcTemplate.update(connection -> {
+      PreparedStatement ps = connection.prepareStatement("INSERT INTO car "
+          + "\t(registration_number, personal_use) values (?, ?);", new String[] {"id"});
+      ps.setString(1, car.getRegistrationNumber());
+      ps.setBoolean(2, car.isPersonalUse());
+      return ps;
+    }, keyHolder);
+
+    return keyHolder.getKey().intValue();
+  }
+
   @Override
   public int save(Invoice invoice) {
     GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
@@ -40,7 +73,7 @@ public class SqlDatabase implements Database {
       ps.setBigDecimal(5, invoice.getBuyer().getHealthInsurance());
       return ps;
     }, keyHolder);
-    Long buyerId = Objects.requireNonNull(keyHolder.getKey()).longValue();
+    int buyerId = (int) Objects.requireNonNull(keyHolder.getKey()).longValue();
 
     jdbcTemplate.update(connection -> {
       PreparedStatement ps = connection.prepareStatement("INSERT INTO company "
@@ -53,10 +86,27 @@ public class SqlDatabase implements Database {
       ps.setBigDecimal(5, invoice.getSeller().getHealthInsurance());
       return ps;
     }, keyHolder);
-    Long sellerId = keyHolder.getKey().longValue();
+    int sellerId = (int) keyHolder.getKey().longValue();
+
+    invoice.getEntries().forEach(invoiceEntry -> {
+      jdbcTemplate.update(connection -> {
+        PreparedStatement ps = connection.prepareStatement("INSERT INTO invoice_entry "
+            + "\t(description, quantity, net_price, vat_value, vat_rate, expense_related_to_car) "
+            + "\tvalues (?, ?, ?, ?, ?, ?);", new String[] {"id"});
+        ps.setString(1, invoiceEntry.getDescription());
+        ps.setInt(2, invoiceEntry.getQuantity());
+        ps.setBigDecimal(3, invoiceEntry.getNetPrice());
+        ps.setBigDecimal(4, invoiceEntry.getVatValue());
+        ps.setInt(5, vatToId.get(invoiceEntry.getVatRate()));
+        ps.setObject(6, insertCarAndGetItId(invoiceEntry.getExpenseRelatedToCar()));
+        return ps;
+      }, keyHolder);
+    });
+    int invoiceEntryId = keyHolder.getKey().intValue();
 
     jdbcTemplate.update(connection -> {
-      PreparedStatement ps = connection.prepareStatement("INSERT INTO invoice (date, number, buyer, seller) "
+      PreparedStatement ps = connection.prepareStatement("INSERT INTO invoice "
+          + "\t(date, number, buyer, seller) "
           + "\tvalues (?, ?, ?, ?);", new String[] {"id"});
       ps.setDate(1, Date.valueOf(invoice.getDate()));
       ps.setString(2, invoice.getNumber());
@@ -64,8 +114,18 @@ public class SqlDatabase implements Database {
       ps.setLong(4, sellerId);
       return ps;
     }, keyHolder);
+    int invoiceId = keyHolder.getKey().intValue();
 
-    return keyHolder.getKey().intValue();
+    jdbcTemplate.update(connection -> {
+      PreparedStatement ps = connection.prepareStatement("INSERT INTO invoice_invoice_entry "
+          + "\t(invoice_id, invoice_entry_id) "
+          + "\tvalues (?, ?);");
+      ps.setInt(1, invoiceId);
+      ps.setInt(2, invoiceEntryId);
+      return ps;
+    });
+
+    return invoiceId;
   }
 
   @Override
@@ -89,12 +149,13 @@ public class SqlDatabase implements Database {
         + "\tc2.pension_insurance as seller_pension_insurance,"
         + "\tc2.health_insurance as seller_health_insurance"
         + "\tFROM invoice i"
-        + "\tinner join company c1 on i.buyer = c1.id"
-        + "\tinner join company c2 on i.seller = c2.id;", (resultSet, rowNumber) -> {
+        + "\tINNER JOIN company c1 on i.buyer = c1.id"
+        + "\tINNER JOIN company c2 on i.seller = c2.id;", (resultSet, rowNumber) -> {
 
         List<InvoiceEntry> invoiceEntries = jdbcTemplate.query("SELECT * FROM invoice_invoice_entry iie"
-            + "\tinner join invoice_entry ie on iie.invoice_entry_id = ie.id"
-            + "\tWHERE invoice_id = 2;", new RowMapper<InvoiceEntry>() {
+            + "\tINNER JOIN invoice_entry ie on iie.invoice_entry_id = ie.id"
+            + "\tLEFT OUTER JOIN car c on ie.expense_related_to_car = c.id "
+            + "\tWHERE invoice_id = 1;", new RowMapper<InvoiceEntry>() {
 
               @Override
               public InvoiceEntry mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -103,11 +164,12 @@ public class SqlDatabase implements Database {
                     .quantity(rs.getInt("quantity"))
                     .netPrice(rs.getBigDecimal("net_price"))
                     .vatValue(rs.getBigDecimal("vat_value"))
-                    .vatRate(Vat.values()[rs.getInt("vat_rate")])
-                    .expenseRelatedToCar(Car.builder()
+                    .vatRate(idToVat.get(rs.getInt("vat_rate")))
+                    .expenseRelatedToCar(rs.getObject("registration_number") != null
+                        ? Car.builder()
                         .registrationNumber(rs.getString("registration_number"))
-                        .personalUse(rs.getBoolean("personal_user"))
-                        .build())
+                        .personalUse(rs.getBoolean("personal_use"))
+                        .build() : null)
                     .build();
               }
             });
