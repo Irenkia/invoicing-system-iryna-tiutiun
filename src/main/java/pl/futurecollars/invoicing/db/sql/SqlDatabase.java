@@ -27,6 +27,23 @@ import pl.futurecollars.invoicing.model.Vat;
 @NoArgsConstructor
 public class SqlDatabase implements Database {
 
+  private static final String SELECT_FROM_INVOICE = "SELECT "
+      + "\ti.id as invoice_id,"
+      + "\ti.date, i.number,"
+      + "\tc1.id as buyer_id,"
+      + "\tc1.tax_identification_number as buyer_tax_identification_number,"
+      + "\tc1.address as buyer_address, c1.name as buyer_name,"
+      + "\tc1.pension_insurance as buyer_pension_insurance,"
+      + "\tc1.health_insurance as buyer_health_insurance,"
+      + "\tc2.id as seller_id,"
+      + "\tc2.tax_identification_number as seller_tax_identification_number,"
+      + "\tc2.address as seller_address, c1.name as seller_name,"
+      + "\tc2.pension_insurance as seller_pension_insurance,"
+      + "\tc2.health_insurance as seller_health_insurance"
+      + "\tFROM invoice i"
+      + "\tINNER JOIN company c1 on i.buyer = c1.id"
+      + "\tINNER JOIN company c2 on i.seller = c2.id;";
+
   private JdbcTemplate jdbcTemplate;
 
   private Map<Vat, Integer> vatToId = new HashMap<>();
@@ -37,7 +54,7 @@ public class SqlDatabase implements Database {
   }
 
   @PostConstruct
-  private void initVatRateMap() { // default so it can be called from SqlDatabaseIntegrationTest
+  private void initVatRateMap() { // default so it can be called from SqlDatabaseTest
     jdbcTemplate.query("SELECT * FROM vat", resultSet -> {
       Vat vat = Vat.valueOf("VAT_" + resultSet.getString("name"));
       int id = resultSet.getInt("id");
@@ -79,6 +96,21 @@ public class SqlDatabase implements Database {
     return invoiceId;
   }
 
+  private Integer insertCarAndGetItId(Car car) {
+    if (car == null) {
+      return null;
+    }
+    GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
+    jdbcTemplate.update(connection -> {
+      PreparedStatement ps = connection.prepareStatement("INSERT INTO car "
+          + "\t(registration_number, personal_use) values (?, ?);", new String[] {"id"});
+      ps.setString(1, car.getRegistrationNumber());
+      ps.setBoolean(2, car.isPersonalUse());
+      return ps;
+    }, keyHolder);
+    return Objects.requireNonNull(keyHolder.getKey()).intValue();
+  }
+
   private int insertInvoiceEntry(Invoice invoice) {
     GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
     invoice.getEntries().forEach(invoiceEntry -> {
@@ -111,82 +143,37 @@ public class SqlDatabase implements Database {
     });
   }
 
-  private Integer insertCarAndGetItId(Car car) {
-    if (car == null) {
-      return null;
-    }
+  private List<InvoiceEntry> selectFromInvoiceInvoiceEntry(int invoiceId) {
+    return jdbcTemplate.query("SELECT * FROM invoice_invoice_entry iie"
+        + "\tINNER JOIN invoice_entry ie on iie.invoice_entry_id = ie.id"
+        + "\tLEFT OUTER JOIN car c on ie.expense_related_to_car = c.id "
+        + "\tWHERE invoice_id = " + invoiceId + ";", new RowMapper<InvoiceEntry>() {
 
-    GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
-    jdbcTemplate.update(connection -> {
-      PreparedStatement ps = connection.prepareStatement("INSERT INTO car "
-          + "\t(registration_number, personal_use) values (?, ?);", new String[] {"id"});
-      ps.setString(1, car.getRegistrationNumber());
-      ps.setBoolean(2, car.isPersonalUse());
-      return ps;
-    }, keyHolder);
-
-    return Objects.requireNonNull(keyHolder.getKey()).intValue();
+          @Override
+          public InvoiceEntry mapRow(ResultSet rs, int rowNum) throws SQLException {
+            return InvoiceEntry.builder()
+                .description(rs.getString("description"))
+                .quantity(rs.getInt("quantity"))
+                .netPrice(rs.getBigDecimal("net_price"))
+                .vatValue(rs.getBigDecimal("vat_value"))
+                .vatRate(idToVat.get(rs.getInt("vat_rate")))
+                .expenseRelatedToCar(rs.getObject("registration_number") != null
+                    ? Car.builder()
+                    .registrationNumber(rs.getString("registration_number"))
+                    .personalUse(rs.getBoolean("personal_use"))
+                    .build() : null)
+                .build();
+          }
+        });
   }
 
-  @Override
-  @Transactional
-  public int save(Invoice invoice) {
-    int buyerId = insertCompany(invoice.getBuyer());
-    int sellerId = insertCompany(invoice.getSeller());
-    int invoiceId = insertInvoice(invoice, buyerId, sellerId);
-    int invoiceEntryId = insertInvoiceEntry(invoice);
-    insertInvoiceInvoiceEntry(invoiceId, invoiceEntryId);
-    return invoiceId;
-  }
+  private List<Invoice> selectFromInvoice() {
+    return jdbcTemplate.query(SELECT_FROM_INVOICE, (resultSet, rowNumber) -> {
+      int invoiceId = resultSet.getInt("invoice_id");
 
-  @Override
-  public Optional<Invoice> getById(int id) {
-    return Optional.empty();
-  }
+      List<InvoiceEntry> invoiceEntries = selectFromInvoiceInvoiceEntry(invoiceId);
 
-  @Override
-  public List<Invoice> getAll() {
-    return jdbcTemplate.query("SELECT "
-        + "\ti.id as invoice_id,"
-        + "\ti.date, i.number,"
-        + "\tc1.id as buyer_id,"
-        + "\tc1.tax_identification_number as buyer_tax_identification_number,"
-        + "\tc1.address as buyer_address, c1.name as buyer_name,"
-        + "\tc1.pension_insurance as buyer_pension_insurance,"
-        + "\tc1.health_insurance as buyer_health_insurance,"
-        + "\tc2.id as seller_id,"
-        + "\tc2.tax_identification_number as seller_tax_identification_number,"
-        + "\tc2.address as seller_address, c1.name as seller_name,"
-        + "\tc2.pension_insurance as seller_pension_insurance,"
-        + "\tc2.health_insurance as seller_health_insurance"
-        + "\tFROM invoice i"
-        + "\tINNER JOIN company c1 on i.buyer = c1.id"
-        + "\tINNER JOIN company c2 on i.seller = c2.id;", (resultSet, rowNumber) -> {
-          int invoiceId = resultSet.getInt("invoice_id");
-
-        List<InvoiceEntry> invoiceEntries = jdbcTemplate.query("SELECT * FROM invoice_invoice_entry iie"
-            + "\tINNER JOIN invoice_entry ie on iie.invoice_entry_id = ie.id"
-            + "\tLEFT OUTER JOIN car c on ie.expense_related_to_car = c.id "
-            + "\tWHERE invoice_id = " + invoiceId + ";", new RowMapper<InvoiceEntry>() {
-
-              @Override
-              public InvoiceEntry mapRow(ResultSet rs, int rowNum) throws SQLException {
-                return InvoiceEntry.builder()
-                    .description(rs.getString("description"))
-                    .quantity(rs.getInt("quantity"))
-                    .netPrice(rs.getBigDecimal("net_price"))
-                    .vatValue(rs.getBigDecimal("vat_value"))
-                    .vatRate(idToVat.get(rs.getInt("vat_rate")))
-                    .expenseRelatedToCar(rs.getObject("registration_number") != null
-                        ? Car.builder()
-                        .registrationNumber(rs.getString("registration_number"))
-                        .personalUse(rs.getBoolean("personal_use"))
-                        .build() : null)
-                    .build();
-              }
-            });
-
-        return Invoice.builder()
+      return Invoice.builder()
           .id(resultSet.getInt("invoice_id"))
           .date(resultSet.getDate("date").toLocalDate())
           .number(resultSet.getString("number"))
@@ -208,7 +195,28 @@ public class SqlDatabase implements Database {
               .build())
           .entries(invoiceEntries)
           .build();
-      });
+    });
+  }
+
+  @Override
+  @Transactional
+  public int save(Invoice invoice) {
+    int buyerId = insertCompany(invoice.getBuyer());
+    int sellerId = insertCompany(invoice.getSeller());
+    int invoiceId = insertInvoice(invoice, buyerId, sellerId);
+    int invoiceEntryId = insertInvoiceEntry(invoice);
+    insertInvoiceInvoiceEntry(invoiceId, invoiceEntryId);
+    return invoiceId;
+  }
+
+  @Override
+  public Optional<Invoice> getById(int id) {
+    return Optional.empty();
+  }
+
+  @Override
+  public List<Invoice> getAll() {
+    return selectFromInvoice();
   }
 
   @Override
