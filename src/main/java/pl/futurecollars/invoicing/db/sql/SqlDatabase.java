@@ -42,7 +42,7 @@ public class SqlDatabase implements Database {
       + "\tc2.health_insurance as seller_health_insurance"
       + "\tFROM invoice i"
       + "\tINNER JOIN company c1 on i.buyer = c1.id"
-      + "\tINNER JOIN company c2 on i.seller = c2.id;";
+      + "\tINNER JOIN company c2 on i.seller = c2.id";
 
   private JdbcTemplate jdbcTemplate;
 
@@ -167,8 +167,8 @@ public class SqlDatabase implements Database {
         });
   }
 
-  private List<Invoice> selectFromInvoice() {
-    return jdbcTemplate.query(SELECT_FROM_INVOICE, (resultSet, rowNumber) -> {
+  private RowMapper<Invoice> selectFromInvoice() {
+    return (resultSet, rowNumber) -> {
       int invoiceId = resultSet.getInt("invoice_id");
 
       List<InvoiceEntry> invoiceEntries = selectFromInvoiceInvoiceEntry(invoiceId);
@@ -195,7 +195,7 @@ public class SqlDatabase implements Database {
               .build())
           .entries(invoiceEntries)
           .build();
-    });
+    };
   }
 
   @Override
@@ -211,12 +211,13 @@ public class SqlDatabase implements Database {
 
   @Override
   public Optional<Invoice> getById(int id) {
-    return Optional.empty();
+    List<Invoice> invoices = jdbcTemplate.query(SELECT_FROM_INVOICE + " WHERE i.id = " + id + ";", selectFromInvoice());
+    return invoices.isEmpty() ? Optional.empty() : Optional.of(invoices.get(0));
   }
 
   @Override
   public List<Invoice> getAll() {
-    return selectFromInvoice();
+    return jdbcTemplate.query(SELECT_FROM_INVOICE + ";", selectFromInvoice());
   }
 
   @Override
