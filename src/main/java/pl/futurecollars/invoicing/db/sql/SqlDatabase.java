@@ -132,7 +132,6 @@ public class SqlDatabase implements Database {
   }
 
   private void insertInvoiceInvoiceEntry(int invoiceId, int invoiceEntryId) {
-    GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
     jdbcTemplate.update(connection -> {
       PreparedStatement ps = connection.prepareStatement("INSERT INTO invoice_invoice_entry "
           + "\t(invoice_id, invoice_entry_id) "
@@ -198,6 +197,43 @@ public class SqlDatabase implements Database {
     };
   }
 
+  private void deleteInvoiceInvoiceEntry(int id) {
+    jdbcTemplate.update(connection -> {
+      PreparedStatement ps = connection.prepareStatement("DELETE FROM invoice_invoice_entry "
+          + "\tWHERE invoice_id = ?;");
+      ps.setInt(1, id);
+      return ps;
+    });
+  }
+
+  private void deleteInvoiceEntry(int id) {
+    jdbcTemplate.update(connection -> {
+      PreparedStatement ps = connection.prepareStatement("DELETE FROM invoice_entry "
+          + "\tWHERE id = ?;");
+      ps.setInt(1, id);
+      return ps;
+    });
+  }
+
+  private void deleteCar(int id) {
+    jdbcTemplate.update(connection -> {
+      PreparedStatement ps = connection.prepareStatement("DELETE FROM car "
+          + "\tWHERE id = ?;");
+      ps.setInt(1, id);
+      return ps;
+    });
+  }
+
+  private void deleteCompany(Invoice invoice) {
+    jdbcTemplate.update(connection -> {
+      PreparedStatement ps = connection.prepareStatement("DELETE FROM company "
+          + "\tWHERE id in (?, ?);");
+      ps.setInt(1, invoice.getBuyer().getId());
+      ps.setInt(2, invoice.getSeller().getId());
+      return ps;
+    });
+  }
+
   @Override
   @Transactional
   public int save(Invoice invoice) {
@@ -227,6 +263,21 @@ public class SqlDatabase implements Database {
 
   @Override
   public Optional<Invoice> delete(int id) {
-    return Optional.empty();
+    Optional<Invoice> invoiceOptional = getById(id);
+    if (invoiceOptional.isPresent()) {
+      deleteInvoiceInvoiceEntry(id);
+      deleteInvoiceEntry(id);
+      deleteCar(id);
+      jdbcTemplate.update(connection -> {
+        PreparedStatement ps = connection.prepareStatement("DELETE FROM invoice "
+            + "\tWHERE id = ?;");
+        ps.setInt(1, id);
+        return ps;
+      });
+      Invoice invoice = invoiceOptional.get();
+      deleteCompany(invoice);
+    }
+    return invoiceOptional;
   }
+
 }
