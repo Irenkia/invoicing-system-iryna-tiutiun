@@ -1,4 +1,5 @@
-CREATE TABLE IF NOT EXISTS  public.invoice
+--CREATE TABLE IF NOT EXISTS  public.invoice
+CREATE TABLE public.invoice
 (
     id bigserial NOT NULL,
     date date NOT NULL,

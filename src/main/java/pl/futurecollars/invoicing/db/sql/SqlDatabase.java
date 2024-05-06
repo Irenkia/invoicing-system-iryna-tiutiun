@@ -54,7 +54,7 @@ public class SqlDatabase implements Database {
   }
 
   @PostConstruct
-  private void initVatRateMap() { // default so it can be called from SqlDatabaseTest
+  void initVatRateMap() { // default so it can be called from SqlDatabaseTest
     jdbcTemplate.query("SELECT * FROM vat", resultSet -> {
       Vat vat = Vat.valueOf("VAT_" + resultSet.getString("name"));
       int id = resultSet.getInt("id");

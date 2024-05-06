@@ -19,5 +19,5 @@ ALTER TABLE public.invoice_entry
         REFERENCES public.car (id)
                 ON DELETE CASCADE;
 
-ALTER TABLE IF EXISTS public.invoice_entry
-    OWNER to postgres;
+--ALTER TABLE IF EXISTS public.invoice_entry
+--    OWNER to postgres;

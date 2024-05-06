@@ -152,14 +152,14 @@ jacocoTestCoverageVerification {
         rule {
             limit {
                 counter = 'BRANCH'
-                minimum = 0.54
+                minimum = 0.85
             }
         }
 
         rule {
             limit {
                 counter = 'LINE'
-                minimum = 0.46
+                minimum = 0.85
             }
         }
     }
