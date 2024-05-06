@@ -197,6 +197,25 @@ public class SqlDatabase implements Database {
     };
   }
 
+  private void updateCompany(Company originalCompany, Company updateCompany) {
+    jdbcTemplate.update(connection -> {
+      PreparedStatement ps = connection.prepareStatement("UPDATE company "
+          + "\tSET tax_identification_number=?, "
+          + "\taddress=?, "
+          + "\tname=?, "
+          + "\tpension_insurance=?, "
+          + "\thealth_insurance=? "
+          + "\tWHERE id = ?;");
+      ps.setString(1, updateCompany.getTaxIdentificationNumber());
+      ps.setString(2, updateCompany.getAddress());
+      ps.setString(3, updateCompany.getName());
+      ps.setBigDecimal(4, updateCompany.getPensionInsurance());
+      ps.setBigDecimal(5, updateCompany.getHealthInsurance());
+      ps.setInt(6, originalCompany.getId());
+      return ps;
+    });
+  }
+
   private void deleteInvoiceInvoiceEntry(int id) {
     jdbcTemplate.update(connection -> {
       PreparedStatement ps = connection.prepareStatement("DELETE FROM invoice_invoice_entry "
@@ -258,7 +277,27 @@ public class SqlDatabase implements Database {
 
   @Override
   public Optional<Invoice> update(int id, Invoice updatedInvoice) {
-    return Optional.empty();
+    Optional<Invoice> originalInvoice = getById(id);
+    if (originalInvoice.isPresent()) {
+      updateCompany(originalInvoice.get().getBuyer(), updatedInvoice.getBuyer());
+      updateCompany(originalInvoice.get().getSeller(), updatedInvoice.getSeller());
+      jdbcTemplate.update(connection -> {
+        PreparedStatement ps = connection.prepareStatement("UPDATE invoice "
+            + "\tSET date=?, "
+            + "\tnumber=? "
+            + "\tWHERE id = ?;");
+        ps.setDate(1, Date.valueOf(updatedInvoice.getDate()));
+        ps.setString(2, updatedInvoice.getNumber());
+        ps.setInt(3, id);
+        return ps;
+      });
+      deleteInvoiceInvoiceEntry(id);
+      deleteInvoiceEntry(id);
+      deleteCar(id);
+      int invoiceEntryId = insertInvoiceEntry(updatedInvoice);
+      insertInvoiceInvoiceEntry(id, invoiceEntryId);
+    }
+    return originalInvoice;
   }
 
   @Override
