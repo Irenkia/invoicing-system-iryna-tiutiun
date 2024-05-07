@@ -48,6 +48,7 @@ class TestHelpers extends Specification {
     static invoice(int id) {
         Invoice.builder()
                 .date(LocalDate.now())
+                .number("123/4242/43221/$id")
                 .buyer(buyer(id))
                 .seller(seller(id))
                 .entries((1..id).collect({ product(it)}))

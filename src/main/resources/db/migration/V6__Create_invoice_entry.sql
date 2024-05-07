@@ -16,7 +16,8 @@ ALTER TABLE public.invoice_entry
 
 ALTER TABLE public.invoice_entry
     ADD CONSTRAINT car_fk FOREIGN KEY (expense_related_to_car)
-        REFERENCES public.car (id);
+        REFERENCES public.car (id)
+                ON DELETE CASCADE;
 
-ALTER TABLE IF EXISTS public.invoice_entry
-    OWNER to postgres;
+--ALTER TABLE IF EXISTS public.invoice_entry
+--    OWNER to postgres;

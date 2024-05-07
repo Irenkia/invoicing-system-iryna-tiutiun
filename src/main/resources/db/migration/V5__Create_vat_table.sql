@@ -15,6 +15,6 @@ values ('23', 0.23),
        ('0', 0.00),
        ('ZW', 0.00);
 
-ALTER TABLE IF EXISTS public.vat
-    OWNER to postgres;
+--ALTER TABLE IF EXISTS public.vat
+--    OWNER to postgres;
 
