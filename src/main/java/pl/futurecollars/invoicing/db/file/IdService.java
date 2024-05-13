@@ -7,14 +7,14 @@ public class IdService {
 
   private final Path idFilePath;
   private final FilesService filesService;
-  private int nextId = 1;
+  private Long nextId = 1L;
 
   public IdService(Path idFilePath, FilesService filesService) {
     this.idFilePath = idFilePath;
     this.filesService = filesService;
   }
 
-  public int getNextIdAndIncrement() {
+  public Long getNextIdAndIncrement() {
     filesService.writeToFile(idFilePath, String.valueOf(nextId));
     return nextId++;
   }

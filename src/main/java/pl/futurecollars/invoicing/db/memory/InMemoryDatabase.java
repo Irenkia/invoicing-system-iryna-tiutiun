@@ -12,18 +12,18 @@ import pl.futurecollars.invoicing.model.Invoice;
 @NoArgsConstructor
 public class InMemoryDatabase implements Database {
 
-  private final Map<Integer, Invoice> invoices = new HashMap<>();
-  private int nextId = 1;
+  private final Map<Long, Invoice> invoices = new HashMap<>();
+  private Long nextId = 1L;
 
   @Override
-  public int save(Invoice invoice) {
+  public Long save(Invoice invoice) {
     invoice.setId(nextId);
     invoices.put(nextId, invoice);
     return nextId++;
   }
 
   @Override
-  public Optional<Invoice> getById(int id) {
+  public Optional<Invoice> getById(Long id) {
     return Optional.ofNullable(invoices.get(id));
   }
 
@@ -33,7 +33,7 @@ public class InMemoryDatabase implements Database {
   }
 
   @Override
-  public Optional<Invoice> update(int id, Invoice updatedInvoice) {
+  public Optional<Invoice> update(Long id, Invoice updatedInvoice) {
     Optional<Invoice> invoice = Optional.ofNullable(invoices.get(id));
     if (invoices.containsKey(id)) {
       updatedInvoice.setId(id);
@@ -43,7 +43,7 @@ public class InMemoryDatabase implements Database {
   }
 
   @Override
-  public Optional<Invoice> delete(int id) {
+  public Optional<Invoice> delete(Long id) {
     return Optional.ofNullable(invoices.remove(id));
   }
 }

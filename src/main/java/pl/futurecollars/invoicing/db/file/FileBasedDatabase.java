@@ -24,7 +24,7 @@ public class FileBasedDatabase implements Database {
   }
 
   @Override
-  public int save(Invoice invoice) {
+  public Long save(Invoice invoice) {
     try {
       invoice.setId(idService.getNextIdAndIncrement());
       filesService.appendLineToFile(databasePath, jsonService.toJson(invoice));
@@ -36,7 +36,7 @@ public class FileBasedDatabase implements Database {
   }
 
   @Override
-  public Optional<Invoice> getById(int id) {
+  public Optional<Invoice> getById(Long id) {
     try {
       return filesService.readAllLines(databasePath)
           .stream()
@@ -61,7 +61,7 @@ public class FileBasedDatabase implements Database {
   }
 
   @Override
-  public Optional<Invoice> update(int id, Invoice updatedInvoice) {
+  public Optional<Invoice> update(Long id, Invoice updatedInvoice) {
     try {
       List<String> allLines = filesService.readAllLines(databasePath);
       List<String> listWithoutInvoiceFromId = allLines
@@ -82,7 +82,7 @@ public class FileBasedDatabase implements Database {
   }
 
   @Override
-  public Optional<Invoice> delete(int id) {
+  public Optional<Invoice> delete(Long id) {
     try {
       List<String> allLines = filesService.readAllLines(databasePath);
       List<String> listWithoutInvoiceFromId = allLines
@@ -98,7 +98,7 @@ public class FileBasedDatabase implements Database {
     }
   }
 
-  private boolean containsId(String line, int id) {
+  private boolean containsId(String line, Long id) {
     return line.contains("{\"id\":" + id + ",");
   }
 }

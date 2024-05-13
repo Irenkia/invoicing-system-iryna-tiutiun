@@ -25,7 +25,6 @@ class SqlDatabaseTest extends AbstractDatabaseTest {
         flyway.migrate()
 
         def database = new SqlDatabase(jdbcTemplate)
-        database.initVatRateMap() // need to call explicity because we do not creat it as spring bean
 
         return database
     }

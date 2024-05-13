@@ -28,20 +28,20 @@ public interface InvoiceApi {
   @ApiOperation(value = "Add new invoice to system")
   @PostMapping
   @ResponseStatus(HttpStatus.OK)
-  int addInvoice(@RequestBody Invoice invoice);
+  Long addInvoice(@RequestBody Invoice invoice);
 
   @ApiOperation(value = "Get invoice by id")
   @GetMapping(value = "/{id}", produces = {"application/json;charset=UTF-8"})
   @ResponseStatus(HttpStatus.OK)
-  ResponseEntity<Optional<Invoice>> findById(@PathVariable("id") int id);
+  ResponseEntity<Optional<Invoice>> findById(@PathVariable("id") Long id);
 
   @ApiOperation(value = "Update invoice with given id")
   @PutMapping("/{id}")
   @ResponseStatus(HttpStatus.OK)
-  ResponseEntity<Optional<Invoice>> updateInvoice(@PathVariable("id") int id, @RequestBody Invoice invoice);
+  ResponseEntity<Optional<Invoice>> updateInvoice(@PathVariable("id") Long id, @RequestBody Invoice invoice);
 
   @ApiOperation(value = "Delete invoice with given id")
   @DeleteMapping("/{id}")
   @ResponseStatus(HttpStatus.OK)
-  ResponseEntity<Optional<Invoice>> deleteInvoice(@PathVariable("id") int id);
+  ResponseEntity<Optional<Invoice>> deleteInvoice(@PathVariable("id") Long id);
 }

@@ -24,6 +24,10 @@ class Requests extends Specification {
     @Autowired
     JsonService jsonService;
 
+    def setup() {
+        getRequest().each { invoice -> deleteRequestById(invoice.id) }
+    }
+
     List<Invoice> getRequest(){
         def response = mockMvc
                 .perform(MockMvcRequestBuilders.get("/invoices"))
@@ -34,7 +38,7 @@ class Requests extends Specification {
         return jsonService.toObject(response, Invoice[])
     }
 
-    int postRequest(String invoiceAsJson){
+    Long postRequest(String invoiceAsJson){
         def invoiceId = Integer.valueOf(mockMvc.perform(
                 MockMvcRequestBuilders.post("/invoices")
                         .content(invoiceAsJson)
@@ -47,7 +51,7 @@ class Requests extends Specification {
         return invoiceId
     }
 
-    Invoice getRequestById(int id){
+    Invoice getRequestById(Long id){
         def response = mockMvc
                 .perform(MockMvcRequestBuilders.get("/invoices/$id"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -57,7 +61,7 @@ class Requests extends Specification {
         return jsonService.toObject(response, Invoice)
     }
 
-    void putRequestById(int id, String invoiceAsJson){
+    void putRequestById(Long id, String invoiceAsJson){
         mockMvc.perform(
                 MockMvcRequestBuilders.put("/invoices/$id")
                         .content(invoiceAsJson)
@@ -67,7 +71,7 @@ class Requests extends Specification {
                 .andExpect(MockMvcResultMatchers.status().isOk())
     }
 
-    void deleteRequestById(int id){
+    void deleteRequestById(Long id){
         mockMvc.perform(MockMvcRequestBuilders.delete("/invoices/$id"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
     }
