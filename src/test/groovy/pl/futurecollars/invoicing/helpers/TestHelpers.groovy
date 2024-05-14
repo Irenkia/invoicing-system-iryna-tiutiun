@@ -10,29 +10,29 @@ import java.time.LocalDate
 
 class TestHelpers extends Specification {
 
-    static buyer(int id) { //costs
+    static buyer(Long id) { //costs
         Company.builder()
                 .taxIdentificationNumber("$id")
                 .address("ul. Bukowinska 24d/$id 02-703 Warszawa, Polska")
                 .name("iCode Trust $id Sp. z o.o")
                 .pensionInsurance(BigDecimal.valueOf(id * 626.51))
-                .healthInsurance(BigDecimal.valueOf(id * 387.00))
+                .healthInsurance(BigDecimal.valueOf(id * 387.0))
                 .build()
     }
 
-    static seller(int id) { // income
+    static seller(Long id) { // income
         Company.builder()
                 .taxIdentificationNumber("$id")
                 .address("ul. Bukowinska 24d/$id 02-703 Warszawa, Polska")
                 .name("iCode Trust $id Sp. z o.o")
                 .pensionInsurance(BigDecimal.valueOf(id * 626.51))
-                .healthInsurance(BigDecimal.valueOf(id * 387.00))
+                .healthInsurance(BigDecimal.valueOf(id * 387.0))
                 .build()
     }
-    static product(int id) {
+    static product(Long id) {
         InvoiceEntry.builder()
                 .description("Programming course $id")
-                .quantity(1)
+                .quantity(1.0)
                 .netPrice(BigDecimal.valueOf(id * 8100))
                 .vatValue(BigDecimal.valueOf(id * 1900))
                 .vatRate(Vat.VAT_19)
@@ -45,7 +45,7 @@ class TestHelpers extends Specification {
                 .build()
     }
 
-    static invoice(int id) {
+    static invoice(Long id) {
         Invoice.builder()
                 .date(LocalDate.now())
                 .number("123/4242/43221/$id")

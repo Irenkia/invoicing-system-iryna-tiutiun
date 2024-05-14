@@ -23,26 +23,26 @@ public class InvoiceController implements InvoiceApi {
   }
 
   @Override
-  public int addInvoice(@RequestBody Invoice invoice) {
+  public Long addInvoice(@RequestBody Invoice invoice) {
     return service.save(invoice);
   }
 
   @Override
-  public ResponseEntity<Optional<Invoice>> findById(@PathVariable("id") int id) {
+  public ResponseEntity<Optional<Invoice>> findById(@PathVariable("id") Long id) {
     return Optional.ofNullable(service.getById(id))
         .map(invoice -> ResponseEntity.ok().body(invoice))
         .orElse(ResponseEntity.notFound().build());
   }
 
   @Override
-  public ResponseEntity<Optional<Invoice>> updateInvoice(@PathVariable("id") int id, @RequestBody Invoice invoice) {
+  public ResponseEntity<Optional<Invoice>> updateInvoice(@PathVariable("id") Long id, @RequestBody Invoice invoice) {
     return Optional.of(service.update(id, invoice))
         .map(ResponseEntity.ok()::body)
         .orElse(ResponseEntity.notFound().build());
   }
 
   @Override
-  public ResponseEntity<Optional<Invoice>> deleteInvoice(@PathVariable("id") int id) {
+  public ResponseEntity<Optional<Invoice>> deleteInvoice(@PathVariable("id") Long id) {
     return Optional.of(service.delete(id))
         .map(ResponseEntity.ok()::body)
         .orElse(ResponseEntity.notFound().build());
