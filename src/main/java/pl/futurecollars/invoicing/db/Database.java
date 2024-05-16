@@ -8,27 +8,28 @@ import java.util.function.Predicate;
 import org.springframework.stereotype.Repository;
 import pl.futurecollars.invoicing.model.Invoice;
 import pl.futurecollars.invoicing.model.InvoiceEntry;
+import pl.futurecollars.invoicing.model.WithId;
 
 @Repository
-public interface Database {
+public interface Database<T extends WithId> {
 
-  Long save(Invoice invoice);
+  Long save(T item);
 
-  Optional<Invoice> getById(Long id);
+  Optional<T> getById(Long id);
 
-  List<Invoice> getAll();
+  List<T> getAll();
 
-  Optional<Invoice> update(Long id, Invoice updatedInvoice);
+  Optional<T> update(Long id, T updateItem);
 
-  Optional<Invoice> delete(Long id);
+  Optional<T> delete(Long id);
 
-  default BigDecimal visit(Predicate<Invoice> invoicePredicate, Function<InvoiceEntry, BigDecimal> invoiceEntryToValue) {
-    return getAll().stream()
-        .filter(invoicePredicate)
-        .flatMap(i -> i.getEntries().stream())
-        .map(invoiceEntryToValue)
-        .reduce(BigDecimal.ZERO, BigDecimal::add);
-  }
+//  default BigDecimal visit(Predicate<Invoice> invoicePredicate, Function<InvoiceEntry, BigDecimal> invoiceEntryToValue) {
+//    return getAll().stream()
+//        .filter(invoicePredicate)
+//        .flatMap(i -> i.getEntries().stream())
+//        .map(invoiceEntryToValue)
+//        .reduce(BigDecimal.ZERO, BigDecimal::add);
+//  }
 
   default void reset() {
     getAll().forEach(invoice -> delete(invoice.getId()));
