@@ -13,6 +13,6 @@ logging:
 
 spring:
   profiles:
-    active: mongo
+    active: jpa-flyway
   flyway:
     enabled: false

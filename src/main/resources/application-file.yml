@@ -1,10 +1,8 @@
-server:
-  port: 9999
-
 invoicing-system:
   database: file
   database.directory: db
   database.invoices.file: invoices.txt
+  database.companies.file: companies.txt
   database.id.file: id.txt
 
 logging:
