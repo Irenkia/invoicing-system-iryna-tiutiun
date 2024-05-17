@@ -15,7 +15,7 @@ public class MongoIdProvider {
   private static final Document FILTER_DOCUMENT = new Document(ID_KEY, ID_VALUE);
 
   private final MongoCollection<Document> collection;
-  private long lastValue = 0;
+  private long lastValue = 0L;
 
   @PostConstruct
   private void postConstruct() {
