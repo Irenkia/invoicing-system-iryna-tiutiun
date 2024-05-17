@@ -55,12 +55,12 @@ public class DatabaseConfiguration {
     return new FileBasedDatabase(databaseFilePath, idService, filesService, jsonService);
   }
 
-  @ConditionalOnProperty(name = "invoicing-system.database", havingValue = "memory")
-  @Bean
-  public Database inMemoryDatabase() {
-    log.info("Creating in-memory database");
-    return new InMemoryDatabase();
-  }
+//  @ConditionalOnProperty(name = "invoicing-system.database", havingValue = "memory")
+//  @Bean
+//  public Database inMemoryDatabase() {
+//    log.info("Creating in-memory database");
+//    return new InMemoryDatabase();
+//  }
 
   @ConditionalOnProperty(name = "invoicing-system.database", havingValue = "sql")
   @Bean
