@@ -36,23 +36,23 @@ import pl.futurecollars.invoicing.utils.JsonService;
 @Configuration
 public class DatabaseConfiguration {
 
-  @ConditionalOnProperty(name = "invoicing-system.database", havingValue = "file")
-  @Bean
-  public IdService idService(FilesService filesService,
-                             @Value("${invoicing-system.database.directory}") String databaseDirectory,
-                             @Value("${invoicing-system.database.id.file}") String idFile) throws IOException {
-    log.info("Creating in-file database = info");
-    Path idFilePath = Files.createTempFile(databaseDirectory, idFile);
-    return new IdService(idFilePath, filesService);
-  }
-
-  @ConditionalOnProperty(name = "invoicing-system.database", havingValue = "file")
-  @Bean
-  public Database fileBasedDatabase(IdService idService, FilesService filesService, JsonService jsonService,
-                                    @Value("${invoicing-system.database.directory}") String databaseDirectory,
-                                    @Value("${invoicing-system.database.invoices.file}") String invoicesFile) throws IOException {
-    Path databaseFilePath = Files.createTempFile(databaseDirectory, invoicesFile);
-    return new FileBasedDatabase(databaseFilePath, idService, filesService, jsonService);
+//  @ConditionalOnProperty(name = "invoicing-system.database", havingValue = "file")
+//  @Bean
+//  public IdService idService(FilesService filesService,
+//                             @Value("${invoicing-system.database.directory}") String databaseDirectory,
+//                             @Value("${invoicing-system.database.id.file}") String idFile) throws IOException {
+//    log.info("Creating in-file database = info");
+//    Path idFilePath = Files.createTempFile(databaseDirectory, idFile);
+//    return new IdService(idFilePath, filesService);
+//  }
+//
+//  @ConditionalOnProperty(name = "invoicing-system.database", havingValue = "file")
+//  @Bean
+//  public Database fileBasedDatabase(IdService idService, FilesService filesService, JsonService jsonService,
+//                                    @Value("${invoicing-system.database.directory}") String databaseDirectory,
+//                                    @Value("${invoicing-system.database.invoices.file}") String invoicesFile) throws IOException {
+//    Path databaseFilePath = Files.createTempFile(databaseDirectory, invoicesFile);
+//    return new FileBasedDatabase(databaseFilePath, idService, filesService, jsonService);
   }
 
 //  @ConditionalOnProperty(name = "invoicing-system.database", havingValue = "memory")
