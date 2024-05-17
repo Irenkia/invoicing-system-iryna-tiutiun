@@ -24,7 +24,7 @@ class SqlDatabaseTest extends AbstractDatabaseTest {
         flyway.clean()
         flyway.migrate()
 
-        def database = new SqlDatabase(jdbcTemplate)
+        def database = new InvoiceSqlDatabase(jdbcTemplate)
 
         return database
     }
