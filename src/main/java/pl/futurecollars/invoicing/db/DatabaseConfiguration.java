@@ -68,11 +68,11 @@ public class DatabaseConfiguration {
     return new SqlDatabase(jdbcTemplate);
   }
 
-  @ConditionalOnProperty(name = "invoicing-system.database", havingValue = "jpa")
-  @Bean
-  public Database jpaDatabase(InvoiceRepository invoiceRepository) {
-    return new JpaDatabase(invoiceRepository);
-  }
+//  @ConditionalOnProperty(name = "invoicing-system.database", havingValue = "jpa")
+//  @Bean
+//  public Database jpaDatabase(InvoiceRepository invoiceRepository) {
+//    return new JpaDatabase(invoiceRepository);
+//  }
 
 //  @Bean
 //  @ConditionalOnProperty(name = "invoicing-system.database", havingValue = "mongo")
