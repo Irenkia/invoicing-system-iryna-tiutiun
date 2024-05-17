@@ -29,4 +29,5 @@ public class TaxCalculatorResult {
   private BigDecimal collectedVat;
   private BigDecimal paidVat;
   private BigDecimal vatToReturn;
+
 }
