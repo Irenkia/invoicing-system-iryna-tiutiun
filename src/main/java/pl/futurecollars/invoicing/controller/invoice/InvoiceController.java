@@ -46,4 +46,5 @@ public class InvoiceController implements InvoiceApi {
         .map(ResponseEntity.ok()::body)
         .orElse(ResponseEntity.notFound().build());
   }
+
 }

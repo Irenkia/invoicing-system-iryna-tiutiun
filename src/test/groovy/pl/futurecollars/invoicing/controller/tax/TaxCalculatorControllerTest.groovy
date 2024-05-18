@@ -1,9 +1,9 @@
 package pl.futurecollars.invoicing.controller.tax
 
-import pl.futurecollars.invoicing.controller.Requests
+import pl.futurecollars.invoicing.controller.AbstractControllerTest
 import pl.futurecollars.invoicing.helpers.TestHelpers
 
-class TaxCalculatorControllerTest extends Requests {
+class TaxCalculatorControllerTest extends AbstractControllerTest {
 
     def setup() {
         deleteAllInvoices()
@@ -90,7 +90,7 @@ class TaxCalculatorControllerTest extends Requests {
     def "sum of all products is returned when tax id is matching and when car is used for personal purposes"() {
         given:
         def invoice1 = TestHelpers.invoice(1)
-        def id1 = postRequest(jsonService.toJson(invoice1))
+        def id1 = addInvoiceAndReturnId(invoice1)
 
         when:
         def taxCalculatorResponse1 = calculateTaxes(TestHelpers.buyer(1))
@@ -140,13 +140,13 @@ class TaxCalculatorControllerTest extends Requests {
     def "correct values are returned when company was buyer and seller and when car is used for personal purposes"() {
         given: "added 3 invoices"// sellers: 1-3, buyers: 1-3, 1-3 overlapping
         def invoice1 = TestHelpers.invoice(1)
-        def id1 = postRequest(jsonService.toJson(invoice1))
+        def id1 = addInvoiceAndReturnId(invoice1)
 
         def invoice2 = TestHelpers.invoice(2)
-        def id2 = postRequest(jsonService.toJson(invoice2))
+        def id2 = addInvoiceAndReturnId(invoice2)
 
         def invoice3 = TestHelpers.invoice(3)
-        def id3 = postRequest(jsonService.toJson(invoice3))
+        def id3 = addInvoiceAndReturnId(invoice3)
 
         when:
         def taxCalculatorResponse1 = calculateTaxes(TestHelpers.buyer(3))

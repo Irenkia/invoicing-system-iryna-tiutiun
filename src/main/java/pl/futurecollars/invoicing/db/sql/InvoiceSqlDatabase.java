@@ -109,22 +109,22 @@ public class InvoiceSqlDatabase extends AbstractCompanySqlDatabase implements Da
         + "\tLEFT OUTER JOIN car c on ie.expense_related_to_car = c.id "
         + "\tWHERE invoice_id = " + invoiceId + ";", new RowMapper<InvoiceEntry>() {
 
-      @Override
-      public InvoiceEntry mapRow(ResultSet rs, int rowNum) throws SQLException {
-        return InvoiceEntry.builder()
-            .description(rs.getString("description"))
-            .quantity(rs.getBigDecimal("quantity"))
-            .netPrice(rs.getBigDecimal("net_price"))
-            .vatValue(rs.getBigDecimal("vat_value"))
-            .vatRate(Vat.valueOf(rs.getString("vat_rate")))
-            .expenseRelatedToCar(rs.getObject("registration_number") != null
-                ? Car.builder()
-                .registrationNumber(rs.getString("registration_number"))
-                .personalUse(rs.getBoolean("personal_use"))
-                .build() : null)
-            .build();
-      }
-    });
+          @Override
+          public InvoiceEntry mapRow(ResultSet rs, int rowNum) throws SQLException {
+            return InvoiceEntry.builder()
+                .description(rs.getString("description"))
+                .quantity(rs.getBigDecimal("quantity"))
+                .netPrice(rs.getBigDecimal("net_price"))
+                .vatValue(rs.getBigDecimal("vat_value"))
+                .vatRate(Vat.valueOf(rs.getString("vat_rate")))
+                .expenseRelatedToCar(rs.getObject("registration_number") != null
+                    ? Car.builder()
+                    .registrationNumber(rs.getString("registration_number"))
+                    .personalUse(rs.getBoolean("personal_use"))
+                    .build() : null)
+                .build();
+          }
+        });
   }
 
   private RowMapper<Invoice> selectFromInvoice() {

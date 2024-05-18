@@ -18,4 +18,5 @@ public class TaxCalculatorController implements TaxCalculatorApi {
   public ResponseEntity<TaxCalculatorResult> calculateTaxes(@RequestBody Company company) {
     return ResponseEntity.ok().body(taxService.calculateTaxes(company));
   }
+
 }

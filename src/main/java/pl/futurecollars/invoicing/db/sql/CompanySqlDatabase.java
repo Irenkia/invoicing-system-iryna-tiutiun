@@ -50,7 +50,7 @@ public class CompanySqlDatabase extends AbstractCompanySqlDatabase implements Da
   @Transactional
   public Optional<Company> update(Long id, Company updateCompany) {
     Optional<Company> companyOptional = getById(id);
-    if (companyOptional.isPresent()){
+    if (companyOptional.isPresent()) {
       Company originalCompany = companyOptional.get();
       updateCompany(originalCompany, updateCompany);
     }
@@ -61,7 +61,7 @@ public class CompanySqlDatabase extends AbstractCompanySqlDatabase implements Da
   @Transactional
   public Optional<Company> delete(Long id) {
     Optional<Company> companyOptional = getById(id);
-    if (companyOptional.isPresent()){
+    if (companyOptional.isPresent()) {
       deleteCompany(id);
     }
     return companyOptional;

@@ -3,6 +3,7 @@ package pl.futurecollars.invoicing.controller.company;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,17 +24,17 @@ public interface CompanyApi {
 
   @ApiOperation(value = "Add new company to system")
   @PostMapping
-  long add(@RequestBody Company company);
+  long addCompany(@RequestBody Company company);
 
   @ApiOperation(value = "Get company by id")
   @GetMapping(value = "/{id}")
-  ResponseEntity<Company> getById(@PathVariable Long id);
+  ResponseEntity<Optional<Company>> findById(@PathVariable Long id);
 
   @ApiOperation(value = "Update company with given id")
   @PutMapping("/{id}")
-  ResponseEntity<?> update(@PathVariable Long id, @RequestBody Company company);
+  ResponseEntity<Optional<Company>> update(@PathVariable Long id, @RequestBody Company company);
 
   @ApiOperation(value = "Delete company with given id")
   @DeleteMapping("/{id}")
-  ResponseEntity<?> deleteById(@PathVariable Long id);
+  ResponseEntity<Optional<Company>> deleteById(@PathVariable Long id);
 }
