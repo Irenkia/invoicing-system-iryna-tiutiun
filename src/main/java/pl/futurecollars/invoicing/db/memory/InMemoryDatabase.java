@@ -7,43 +7,44 @@ import java.util.Map;
 import java.util.Optional;
 import lombok.NoArgsConstructor;
 import pl.futurecollars.invoicing.db.Database;
-import pl.futurecollars.invoicing.model.Invoice;
+import pl.futurecollars.invoicing.model.WithId;
 
 @NoArgsConstructor
-public class InMemoryDatabase implements Database {
+public class InMemoryDatabase<T extends WithId> implements Database<T> {
 
-  private final Map<Long, Invoice> invoices = new HashMap<>();
+  private final Map<Long, T> items = new HashMap<>();
   private Long nextId = 1L;
 
   @Override
-  public Long save(Invoice invoice) {
-    invoice.setId(nextId);
-    invoices.put(nextId, invoice);
+  public Long save(T item) {
+    item.setId(nextId);
+    items.put(nextId, item);
     return nextId++;
   }
 
   @Override
-  public Optional<Invoice> getById(Long id) {
-    return Optional.ofNullable(invoices.get(id));
+  public Optional<T> getById(Long id) {
+    return Optional.ofNullable(items.get(id));
   }
 
   @Override
-  public List<Invoice> getAll() {
-    return new ArrayList<>(invoices.values());
+  public List<T> getAll() {
+    return new ArrayList<>(items.values());
   }
 
   @Override
-  public Optional<Invoice> update(Long id, Invoice updatedInvoice) {
-    Optional<Invoice> invoice = Optional.ofNullable(invoices.get(id));
-    if (invoices.containsKey(id)) {
-      updatedInvoice.setId(id);
-      invoices.put(id, updatedInvoice);
+  public Optional<T> update(Long id, T updateItem) {
+    Optional<T> item = Optional.ofNullable(items.get(id));
+    if (items.containsKey(id)) {
+      updateItem.setId(id);
+      items.put(id, updateItem);
     }
-    return invoice;
+    return item;
   }
 
   @Override
-  public Optional<Invoice> delete(Long id) {
-    return Optional.ofNullable(invoices.remove(id));
+  public Optional<T> delete(Long id) {
+    return Optional.ofNullable(items.remove(id));
   }
+
 }

@@ -1,16 +1,16 @@
 package pl.futurecollars.invoicing.controller.invoice
 
-import pl.futurecollars.invoicing.controller.Requests
+import pl.futurecollars.invoicing.controller.AbstractControllerTest
 import pl.futurecollars.invoicing.helpers.TestHelpers
 import pl.futurecollars.invoicing.model.Invoice
 import spock.lang.Shared
 
 import java.time.LocalDate
 
-class InvoiceControllerTest extends Requests {
+class InvoiceControllerTest extends AbstractControllerTest {
 
     @Shared
-    private int invoiceId
+    private Long invoiceId
 
     private LocalDate updateDate = LocalDate.of(2024, 03, 30)
 
@@ -23,7 +23,7 @@ class InvoiceControllerTest extends Requests {
         def invoices = Collections.emptyList()
 
         when:
-        def response = getRequest()
+        def response = getAllInvoices()
 
         then:
         response == invoices
@@ -32,22 +32,21 @@ class InvoiceControllerTest extends Requests {
     def "add single invoice"() {
         given:
         def invoice = TestHelpers.invoice(1)
-        def invoiceAsJson = jsonService.toJson(invoice)
 
         when:
-        invoiceId = postRequest(invoiceAsJson)
+        invoiceId = addInvoiceAndReturnId(invoice)
 
         then:
-        getRequestById(invoiceId) != null
+        getInvoiceById(invoiceId) != null
     }
 
     def "one invoice is returned when getting all invoices"(){
         given:
         def expectedInvoice = TestHelpers.invoice(1)
-        invoiceId = postRequest(jsonService.toJson(expectedInvoice))
+        invoiceId = addInvoiceAndReturnId(expectedInvoice)
 
         when:
-        def response = getRequest()
+        def response = getAllInvoices()
 
         then:
         response.size() == List.of(expectedInvoice).size()
@@ -56,10 +55,10 @@ class InvoiceControllerTest extends Requests {
     def "invoice is returned correctly when getting by id"() {
         given:
         def expectedInvoice = TestHelpers.invoice(1)
-        invoiceId = postRequest(jsonService.toJson(expectedInvoice))
+        invoiceId = addInvoiceAndReturnId(expectedInvoice)
 
         when:
-        def response = getRequestById(invoiceId)
+        def response = getInvoiceById(invoiceId)
 
         then:
         resetIds(response)
@@ -72,7 +71,7 @@ class InvoiceControllerTest extends Requests {
         invoiceId = 25
 
         when:
-        def response = getRequestById(invoiceId)
+        def response = getInvoiceById(invoiceId)
 
         then:
         response == null
@@ -81,15 +80,14 @@ class InvoiceControllerTest extends Requests {
     def "invoice date can be modified"() {
         given:
         def modifiedInvoice = TestHelpers.invoice(1)
+        invoiceId = addInvoiceAndReturnId(modifiedInvoice)
         modifiedInvoice.date = updateDate
-        def invoiceAsJson = jsonService.toJson(modifiedInvoice)
-        invoiceId = postRequest(invoiceAsJson)
 
         when:
-        putRequestById(invoiceId, invoiceAsJson)
+        updateInvoiceById(invoiceId, modifiedInvoice)
 
         then: "updated invoice is returned correctly when getting by id"
-        def response = getRequestById(invoiceId)
+        def response = getInvoiceById(invoiceId)
         response.date == modifiedInvoice.date
     }
 
@@ -97,12 +95,11 @@ class InvoiceControllerTest extends Requests {
         given:
         def modifiedInvoice = TestHelpers.invoice(1)
         modifiedInvoice.date = updateDate
-        def invoiceAsJson =jsonService.toJson(modifiedInvoice)
-        invoiceId = postRequest(invoiceAsJson)
+        invoiceId = addInvoiceAndReturnId(modifiedInvoice)
         invoiceId = 25
 
         when:
-        def response = putRequestById(invoiceId, invoiceAsJson)
+        def response = updateInvoiceById(invoiceId, modifiedInvoice)
 
         then:
         response == null
@@ -111,47 +108,47 @@ class InvoiceControllerTest extends Requests {
     def "invoice can be deleted from exist id"() {
         given: "one invoice is returned correctly when getting all invoices"
         def invoice = TestHelpers.invoice(1)
-        invoiceId = postRequest(jsonService.toJson(invoice))
-        def response = getRequest()
+        invoiceId = addInvoiceAndReturnId(invoice)
+        def response = getAllInvoices()
         response == List.of(invoice)
 
         when: "invoice deleted from exist id"
-        deleteRequestById(invoiceId)
+        deleteInvoiceById(invoiceId)
 
         then:
-        def expectedResponse = getRequest()
+        def expectedResponse = getAllInvoices()
         expectedResponse == Collections.emptyList()
     }
 
     def "invoice can't deleted from no exist id"() {
         given:
         def invoice = TestHelpers.invoice(1)
-        invoiceId = postRequest(jsonService.toJson(invoice))
+        invoiceId = addInvoiceAndReturnId(invoice)
         invoiceId = 10
 
         expect:
-        deleteRequestById(invoiceId) == null
+        deleteInvoiceById(invoiceId) == null
     }
 
     def "when added 3 invoices, then second can be deleted and 2 invoices left"() {
         given: "added 3 invoices"
         def invoice1 = TestHelpers.invoice(1)
-        def invoiceId1 = postRequest(jsonService.toJson(invoice1))
+        def invoiceId1 = addInvoiceAndReturnId(invoice1)
 
         def invoice2 = TestHelpers.invoice(2)
-        def invoiceId2 = postRequest(jsonService.toJson(invoice2))
+        def invoiceId2 = addInvoiceAndReturnId(invoice2)
 
         def invoice3 = TestHelpers.invoice(3)
-        def invoiceId3 = postRequest(jsonService.toJson(invoice3))
+        def invoiceId3 = addInvoiceAndReturnId(invoice3)
 
-        def response = getRequest()
+        def response = getAllInvoices()
         response.size() == List.of(invoice1, invoice2, invoice3).size()
 
         when: "second can be deleted"
-        deleteRequestById(invoiceId2)
+        deleteInvoiceById(invoiceId2)
 
         then: "2 invoices left"
-        def expectedResponse1 = getRequest()
+        def expectedResponse1 = getAllInvoices()
         expectedResponse1.size() == List.of(invoice1, invoice3).size()
 
         deleteAllInvoices()
@@ -165,7 +162,7 @@ class InvoiceControllerTest extends Requests {
         invoice.entries.forEach {
             it.id = null
         }
-        invoice
+        return invoice
     }
 
 }

@@ -4,44 +4,40 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import lombok.AllArgsConstructor;
 import pl.futurecollars.invoicing.db.Database;
-import pl.futurecollars.invoicing.model.Invoice;
+import pl.futurecollars.invoicing.model.WithId;
 import pl.futurecollars.invoicing.utils.FilesService;
 import pl.futurecollars.invoicing.utils.JsonService;
 
-public class FileBasedDatabase implements Database {
+@AllArgsConstructor
+public class FileBasedDatabase<T extends WithId> implements Database<T> {
 
   private final Path databasePath;
   private final IdService idService;
   private final FilesService filesService;
   private final JsonService jsonService;
-
-  public FileBasedDatabase(Path databasePath, IdService idService, FilesService filesService, JsonService jsonService) {
-    this.databasePath = databasePath;
-    this.idService = idService;
-    this.filesService = filesService;
-    this.jsonService = jsonService;
-  }
+  private final Class<T> clazz;
 
   @Override
-  public Long save(Invoice invoice) {
+  public Long save(T item) {
     try {
-      invoice.setId(idService.getNextIdAndIncrement());
-      filesService.appendLineToFile(databasePath, jsonService.toJson(invoice));
+      item.setId(idService.getNextIdAndIncrement());
+      filesService.appendLineToFile(databasePath, jsonService.toJson(item));
 
-      return invoice.getId();
+      return item.getId();
     } catch (Exception e) {
       throw new RuntimeException("Failed to save invoice in Database", e);
     }
   }
 
   @Override
-  public Optional<Invoice> getById(Long id) {
+  public Optional<T> getById(Long id) {
     try {
       return filesService.readAllLines(databasePath)
           .stream()
           .filter(line -> containsId(line, id))
-          .map(line -> jsonService.toObject(line, Invoice.class))
+          .map(line -> jsonService.toObject(line, clazz))
           .findFirst();
     } catch (Exception e) {
       throw new IllegalArgumentException("Failed to get invoice from id - " + id + ", does not exist", e);
@@ -49,11 +45,11 @@ public class FileBasedDatabase implements Database {
   }
 
   @Override
-  public List<Invoice> getAll() {
+  public List<T> getAll() {
     try {
       return filesService.readAllLines(databasePath)
           .stream()
-          .map(line -> jsonService.toObject(line, Invoice.class))
+          .map(line -> jsonService.toObject(line, clazz))
           .collect(Collectors.toList());
     } catch (Exception e) {
       throw new RuntimeException("Failed to read invoices from file", e);
@@ -61,38 +57,38 @@ public class FileBasedDatabase implements Database {
   }
 
   @Override
-  public Optional<Invoice> update(Long id, Invoice updatedInvoice) {
+  public Optional<T> update(Long id, T updateItem) {
     try {
       List<String> allLines = filesService.readAllLines(databasePath);
-      List<String> listWithoutInvoiceFromId = allLines
+      List<String> listWithoutItemFromId = allLines
           .stream()
           .filter(line -> !containsId(line, id))
           .collect(Collectors.toList());
-      Optional<Invoice> invoice = getById(id);
-      if (invoice.isPresent()) {
-        updatedInvoice.setId(id);
-        listWithoutInvoiceFromId.add(jsonService.toJson(updatedInvoice));
+      Optional<T> item = getById(id);
+      if (item.isPresent()) {
+        updateItem.setId(id);
+        listWithoutItemFromId.add(jsonService.toJson(updateItem));
       }
-      allLines.removeAll(listWithoutInvoiceFromId);
-      filesService.writeLinesToFile(databasePath, listWithoutInvoiceFromId);
-      return allLines.isEmpty() ? Optional.empty() : Optional.of(jsonService.toObject(allLines.get(0), Invoice.class));
+      allLines.removeAll(listWithoutItemFromId);
+      filesService.writeLinesToFile(databasePath, listWithoutItemFromId);
+      return allLines.isEmpty() ? Optional.empty() : Optional.of(jsonService.toObject(allLines.get(0), clazz));
     } catch (Exception e) {
       throw new IllegalArgumentException("Failed to update invoice from id - " + id + ", does not exist");
     }
   }
 
   @Override
-  public Optional<Invoice> delete(Long id) {
+  public Optional<T> delete(Long id) {
     try {
       List<String> allLines = filesService.readAllLines(databasePath);
-      List<String> listWithoutInvoiceFromId = allLines
+      List<String> listWithoutItemFromId = allLines
           .stream()
           .filter(line -> !containsId(line, id))
           .collect(Collectors.toList());
-      filesService.writeLinesToFile(databasePath, listWithoutInvoiceFromId);
-      allLines.removeAll(listWithoutInvoiceFromId);
+      filesService.writeLinesToFile(databasePath, listWithoutItemFromId);
+      allLines.removeAll(listWithoutItemFromId);
 
-      return allLines.isEmpty() ? Optional.empty() : Optional.of(jsonService.toObject(allLines.get(0), Invoice.class));
+      return allLines.isEmpty() ? Optional.empty() : Optional.of(jsonService.toObject(allLines.get(0), clazz));
     } catch (Exception e) {
       throw new IllegalArgumentException("Failed to delete invoice from id - " + id + ", does not exist", e);
     }
@@ -101,4 +97,5 @@ public class FileBasedDatabase implements Database {
   private boolean containsId(String line, Long id) {
     return line.contains("{\"id\":" + id + ",");
   }
+
 }

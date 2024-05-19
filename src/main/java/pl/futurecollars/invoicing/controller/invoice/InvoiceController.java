@@ -7,9 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import pl.futurecollars.invoicing.controller.invoice.InvoiceApi;
 import pl.futurecollars.invoicing.model.Invoice;
-import pl.futurecollars.invoicing.service.InvoiceService;
+import pl.futurecollars.invoicing.service.invoice.InvoiceService;
 
 @RestController
 @AllArgsConstructor
@@ -47,4 +46,5 @@ public class InvoiceController implements InvoiceApi {
         .map(ResponseEntity.ok()::body)
         .orElse(ResponseEntity.notFound().build());
   }
+
 }

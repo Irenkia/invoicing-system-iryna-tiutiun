@@ -4,6 +4,7 @@ import pl.futurecollars.invoicing.helpers.TestHelpers
 import pl.futurecollars.invoicing.db.Database
 import pl.futurecollars.invoicing.db.memory.InMemoryDatabase
 import pl.futurecollars.invoicing.model.Invoice
+import pl.futurecollars.invoicing.service.invoice.InvoiceService
 import spock.lang.Specification
 
 class InvoiceServiceIntegrationTest extends Specification {
