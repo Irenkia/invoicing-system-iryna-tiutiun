@@ -6,8 +6,41 @@
 
     <link rel="stylesheet" href="company.css">
     <script src="company.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.js"
+            integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
+            crossorigin="anonymous"></script>
 </head>
 <body>
+<b>Add new company:</b>
+<br/>
+<br/>
+
+<form id="addCompanyForm" action="http://localhost:7777/companies" method="post">
+    <label for="taxId">Tax identification number:</label>
+    <input type="text" id="taxId" name="taxIdentificationNumber">
+    <br/>
+
+    <label for="address">Address:</label>
+    <input type="text" id="address" name="address">
+    <br/>
+
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name">
+    <br/>
+
+    <label for="pensionInsurance">Pension insurance:</label>
+    <input type="text" id="pensionInsurance" name="pensionInsurance">
+    <br/>
+
+    <label for="healthInsurance">Health insurance:</label>
+    <input type="text" id="healthInsurance" name="healthInsurance">
+    <br/>
+
+    <input type="submit">
+</form>
+<br/>
+<br/>
+
 <b>Companies details:</b>
 <br/>
 <br/>
