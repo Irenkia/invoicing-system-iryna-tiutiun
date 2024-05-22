@@ -33,6 +33,10 @@ export class AppComponent {
 
   addCompany() {
       this.companies.push(this.newCompany);
-      this.newCompany = new Company(0, "", "", "", 0, 0);
+      this.newCompany = new Company("", "", "", 0, 0);
+  }
+
+  deleteCompany(companyToDelete: Company) {
+      this.companies = this.companies.filter(company => company !== companyToDelete);
   }
 }
