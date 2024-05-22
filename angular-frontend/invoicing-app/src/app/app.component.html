@@ -1,17 +1,18 @@
-<div class="content" role="main">
+<div class="container" role="main">
   <br/>
   <h1>Companies</h1>
   <div>
     <br />
     <h3>List of companies:</h3>
     <br />
-    <table id="companiesTable" class="table table-striped">
+    <table id="companiesTable" class="table table-striped thead-light table-bordered">
       <tr>
         <th>Tax identification number</th>
         <th>Address</th>
         <th>Name</th>
         <th>Pension insurance</th>
         <th>Health insurance</th>
+        <th></th>
       </tr>
       <tr *ngFor="let company of companies">
         <td>{{ company.taxIdentificationNumber }}</td>
@@ -19,6 +20,16 @@
         <td>{{ company.name }}</td>
         <td>{{ company.pensionInsurance }}</td>
         <td>{{ company.healthInsurance }}</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><input [(ngModel)]="newCompany.taxIdentificationNumber" type="text" class="form-control" name="taxIdentificationNumber"></td>
+        <td><input [(ngModel)]="newCompany.address" type="text" class="form-control" name="address"></td>
+        <td><input [(ngModel)]="newCompany.name" type="text" class="form-control" name="name"></td>
+        <td><input [(ngModel)]="newCompany.pensionInsurance" type="text" class="form-control" name="pensionInsurance"></td>
+        <td><input [(ngModel)]="newCompany.healthInsurance" type="text" class="form-control" name="healthInsurance"></td>
+        <td><input (click)="addCompany()" type="button" class="btn btn-primary" value="Add company"></td>
+<!--        <td><button (click)="addCompany()" type="button" class="btn btn-primary" name="Add company">Add company</td>-->
       </tr>
     </table>
   </div>

@@ -1,8 +1,13 @@
-export interface Company{
-    taxIdentificationNumber: string;
-    address: string;
-    name: string;
-    pensionInsurance: number;
-    healthInsurance: number;
+export class Company{
+
+  constructor(
+    public taxIdentificationNumber: string,
+    public address: string,
+    public name: string,
+    public healthInsurance: number,
+    public pensionInsurance: number
+  ){
+  }
+
 }
 
