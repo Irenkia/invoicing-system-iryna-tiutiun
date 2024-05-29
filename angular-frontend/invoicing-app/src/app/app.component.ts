@@ -50,13 +50,13 @@ export class AppComponent {
       .editCompany(updatedCompany.editedCompany)
       .subscribe(() => {
         updatedCompany.taxIdentificationNumber =
-          updatedCompany.editedCompany?.taxIdentificationNumber;
-        updatedCompany.address = updatedCompany.editedCompany?.address;
-        updatedCompany.name = updatedCompany.editedCompany?.name;
+          updatedCompany.editedCompany.taxIdentificationNumber;
+        updatedCompany.address = updatedCompany.editedCompany.address;
+        updatedCompany.name = updatedCompany.editedCompany.name;
         updatedCompany.healthInsurance =
-          updatedCompany.editedCompany?.healthInsurance;
+          updatedCompany.editedCompany.healthInsurance;
         updatedCompany.pensionInsurance =
-          updatedCompany.editedCompany?.pensionInsurance;
+          updatedCompany.editedCompany.pensionInsurance;
 
         updatedCompany.editMode = false;
       });
