@@ -35,6 +35,31 @@ describe('CompanyService Test', () => {
     httpTestingController.verify();
   });
 
+  it(`calling addCompany() should invoke POST`, () => {
+    const company = expectedCompanies[0];
+    const expectedId = 99;
+
+    companyService
+      .addCompany(company)
+      .subscribe((id) => expect(id).toEqual(expectedId));
+
+    const request = httpTestingController.expectOne(
+      `${environment.apiUrl}/companies`
+    );
+    expect(request.request.method).toBe('POST');
+    expect(request.request.body).toEqual({
+      taxIdentificationNumber: '111-111-11-11',
+      name: 'First Ltd.',
+      address: 'ul. First 1',
+      pensionInsurance: 111.11,
+      healthInsurance: 1111.11,
+    });
+
+    request.flush(expectedId);
+
+    httpTestingController.verify();
+  });
+
   const expectedCompanies: Company[] = [
     new Company(
       1,
