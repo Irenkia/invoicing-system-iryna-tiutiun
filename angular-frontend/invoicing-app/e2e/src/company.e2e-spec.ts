@@ -1,5 +1,6 @@
 import { CompanyPage } from './company.po';
 import { browser, ExpectedConditions } from 'protractor';
+import { CompanyRow } from './companyRow.po';
 
 describe('Company page E2E test', () => {
   let page: CompanyPage;
@@ -8,6 +9,11 @@ describe('Company page E2E test', () => {
     page = new CompanyPage();
 
     await page.navigateTo();
+
+    await page.companyRows().each(async (row) => {
+      let companyRow = new CompanyRow(row);
+      await companyRow.deleteBtn().click();
+    });
 
     browser.wait(
       ExpectedConditions.not(
@@ -31,8 +37,36 @@ describe('Company page E2E test', () => {
   it('can add company', async () => {
     await page.addNewCompany('123', '123 Inc.', '123 Wall Street', 1234, 123);
 
-    page.companyRows().then((rows) => {
+    await page.companyRows().then(async (rows) => {
       expect(rows.length).toEqual(1);
+      await new CompanyRow(rows[0]).assertRowValues(
+        '123',
+        '123 Inc.',
+        '123 Wall Street',
+        '1234',
+        '123'
+      );
+    });
+  });
+
+  it('can delete company', async () => {
+    await page.addNewCompany('123', '123 Inc.', '123 Wall Street', 1234, 123);
+    await page.addNewCompany('456', '456 Inc.', '456 Wall Street', 5678, 567);
+
+    await page.companyRows().then(async (rowsBeforeDelete) => {
+      expect(rowsBeforeDelete.length).toEqual(2);
+      await new CompanyRow(rowsBeforeDelete[0]).deleteBtn().click();
+
+      await page.companyRows().then(async (rowsAfterDelete) => {
+        expect(rowsAfterDelete.length).toEqual(1);
+        await new CompanyRow(rowsAfterDelete[0]).assertRowValues(
+          '456',
+          '456 Inc.',
+          '456 Wall Street',
+          '5678',
+          '567'
+        );
+      });
     });
   });
 });
