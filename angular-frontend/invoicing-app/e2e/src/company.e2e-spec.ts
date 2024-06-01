@@ -1,5 +1,5 @@
 import { CompanyPage } from './company.po';
-import { browser, ExpectedConditions } from 'protractor';
+import { browser, ExpectedConditions, logging } from 'protractor';
 import { CompanyRow } from './companyRow.po';
 
 describe('Company page E2E test', () => {
@@ -68,5 +68,37 @@ describe('Company page E2E test', () => {
         );
       });
     });
+  });
+
+  it('can update company', async () => {
+    await page.addNewCompany('123', '123 Inc.', '123 Wall Street', 1234, 123);
+
+    await page.companyRows().then(async (rows) => {
+      const companyRow = new CompanyRow(rows[0]);
+      await companyRow.updateCompany(
+        '456',
+        '456 Inc.',
+        '456 Wall Street',
+        5678,
+        567
+      );
+      await companyRow.assertRowValues(
+        '456',
+        '456 Inc.',
+        '456 Wall Street',
+        '5678',
+        '567'
+      );
+    });
+  });
+
+  afterEach(async () => {
+    // Assert that there are no errors emitted from the browser
+    const logs = await browser.manage().logs().get(logging.Type.BROWSER);
+    expect(logs).not.toContain(
+      jasmine.objectContaining({
+        level: logging.Level.SEVERE,
+      } as logging.Entry)
+    );
   });
 });
