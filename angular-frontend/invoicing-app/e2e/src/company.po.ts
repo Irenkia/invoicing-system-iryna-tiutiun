@@ -43,4 +43,26 @@ export class CompanyPage {
   deleteBtn(row: ElementFinder): WebElement {
     return row.element(by.css('.btn-danger'));
   }
+
+  async addNewCompany(
+    taxId: string,
+    name: string,
+    address: string,
+    pensionInsurance: number,
+    healthInsurance: number
+  ) {
+    await element(by.css('input[name=taxIdentificationNumber]')).sendKeys(
+      taxId
+    );
+    await element(by.css('input[name=name]')).sendKeys(name);
+    await element(by.css('input[name=address]')).sendKeys(address);
+    await element(by.css('input[name=pensionInsurance]')).sendKeys(
+      pensionInsurance
+    );
+    await element(by.css('input[name=healthInsurance]')).sendKeys(
+      healthInsurance
+    );
+
+    await element(by.id('addCompanyBtn')).click();
+  }
 }

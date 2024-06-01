@@ -27,4 +27,12 @@ describe('Company page E2E test', () => {
     );
     expect(await page.healthInsuranceHeaderValue()).toEqual('Health insurance');
   });
+
+  it('can add company', async () => {
+    await page.addNewCompany('123', '123 Inc.', '123 Wall Street', 1234, 123);
+
+    page.companyRows().then((rows) => {
+      expect(rows.length).toEqual(1);
+    });
+  });
 });
