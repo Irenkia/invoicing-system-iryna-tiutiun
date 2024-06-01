@@ -1,4 +1,11 @@
-import { browser, by, element } from 'protractor';
+import {
+  browser,
+  by,
+  element,
+  ElementFinder,
+  ElementArrayFinder,
+  WebElement,
+} from 'protractor';
 
 export class CompanyPage {
   async navigateTo(): Promise<unknown> {
@@ -23,5 +30,17 @@ export class CompanyPage {
 
   async healthInsuranceHeaderValue(): Promise<string> {
     return element(by.id('healthInsuranceHeader')).getText();
+  }
+
+  companyRows(): ElementArrayFinder {
+    return element.all(by.css('.companyRow'));
+  }
+
+  anyCompanyRow(): ElementFinder {
+    return element(by.css('.companyRow'));
+  }
+
+  deleteBtn(row: ElementFinder): WebElement {
+    return row.element(by.css('.btn-danger'));
   }
 }
