@@ -10,15 +10,15 @@
       class="table table-striped thead-light table-bordered"
     >
       <tr>
-        <th>Tax identification number</th>
-        <th>Address</th>
-        <th>Name</th>
-        <th>Pension insurance</th>
-        <th>Health insurance</th>
+        <th id="taxIdHeader">Tax identification number</th>
+        <th id="addressHeader">Address</th>
+        <th id="nameHeader">Name</th>
+        <th id="pensionInsuranceHeader">Pension insurance</th>
+        <th id="healthInsuranceHeader">Health insurance</th>
         <th></th>
       </tr>
 
-      <tr *ngFor="let company of companies">
+      <tr class="companyRow" *ngFor="let company of companies">
         <td *ngIf="!company.editMode">{{ company.taxIdentificationNumber }}</td>
         <td *ngIf="company.editMode">
           <input
@@ -147,6 +147,7 @@
         </td>
         <td>
           <input
+            id="addCompanyBtn"
             (click)="addCompany()"
             type="button"
             class="btn btn-primary"
