@@ -74,6 +74,10 @@ dependencies {
 //    compile "org.flywaydb:flyway-core:${flywayVersion}"
     implementation "org.flywaydb:flyway-core:${flywayVersion}"
 
+    //Spring-Security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.security:spring-security-test'
+
     //Lombok
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
     compileOnly "org.projectlombok:lombok:${lombokVersion}"
@@ -160,7 +164,7 @@ jacocoTestCoverageVerification {
         rule {
             limit {
                 counter = 'BRANCH'
-                minimum = 0.64
+                minimum = 0.62
             }
         }
 

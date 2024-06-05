@@ -12,8 +12,9 @@ const PATH = 'companies';
 export class CompanyService {
   constructor(private http: HttpClient) {}
 
-  private contentType = {
+  private options = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+    withCredentials: true,
   };
 
   private apiUrl(service: string, id: number = 0): string {
@@ -40,7 +41,7 @@ export class CompanyService {
     return this.http.post<any>(
       this.apiUrl(PATH),
       this.toCompanyRequest(company),
-      this.contentType
+      this.options
     );
   }
 
@@ -48,7 +49,7 @@ export class CompanyService {
     return this.http.put<Company>(
       this.apiUrl(PATH, company.id),
       this.toCompanyRequest(company),
-      this.contentType
+      this.options
     );
   }
 
