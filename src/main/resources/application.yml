@@ -16,3 +16,7 @@ spring:
     active: jpa-flyway
   flyway:
     enabled: false
+  security:
+    user:
+      name: iryna
+      password: irenkia

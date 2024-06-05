@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
+import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
@@ -14,6 +15,9 @@ import pl.futurecollars.invoicing.service.tax.TaxCalculatorResult
 import pl.futurecollars.invoicing.utils.JsonService
 import spock.lang.Specification
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+
+@WithMockUser
 @AutoConfigureMockMvc
 @SpringBootTest
 class AbstractControllerTest extends Specification {
@@ -34,7 +38,7 @@ class AbstractControllerTest extends Specification {
 
     protected  <T> T getAll(Class<T> clazz, String endpoint) {
         def response = mockMvc
-                .perform(MockMvcRequestBuilders.get(endpoint))
+                .perform(MockMvcRequestBuilders.get(endpoint).with(csrf()))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn()
                 .response
@@ -56,6 +60,7 @@ class AbstractControllerTest extends Specification {
                 MockMvcRequestBuilders.post(endpoint)
                         .content(jsonService.toJson(item))
                         .contentType(MediaType.APPLICATION_JSON)
+                        .with(csrf())
         )
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn()
@@ -75,7 +80,7 @@ class AbstractControllerTest extends Specification {
 
     protected <T> T getById(long id, Class<T> clazz, String endpoint) {
         def response = mockMvc
-                .perform(MockMvcRequestBuilders.get("$endpoint/$id"))
+                .perform(MockMvcRequestBuilders.get("$endpoint/$id").with(csrf()))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn()
                 .response
@@ -97,6 +102,7 @@ class AbstractControllerTest extends Specification {
                 MockMvcRequestBuilders.put("$endpoint/$id")
                         .content(jsonService.toJson(item))
                         .contentType(MediaType.APPLICATION_JSON)
+                        .with(csrf())
         )
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -112,7 +118,7 @@ class AbstractControllerTest extends Specification {
 
 
     protected <T> void deleteById(Long id, String endpoint){
-        mockMvc.perform(MockMvcRequestBuilders.delete("$endpoint/$id"))
+        mockMvc.perform(MockMvcRequestBuilders.delete("$endpoint/$id").with(csrf()))
                 .andExpect(MockMvcResultMatchers.status().isOk())
     }
 
@@ -134,7 +140,9 @@ class AbstractControllerTest extends Specification {
         def response = mockMvc.perform(
                 MockMvcRequestBuilders.post("$TAX_CALCULATOR_ENDPOINT")
                         .content(jsonService.toJson(company))
-                        .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .with(csrf())
+        )
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn()
                 .response
